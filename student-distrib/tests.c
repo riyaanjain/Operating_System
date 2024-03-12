@@ -45,7 +45,31 @@ int idt_test(){
 	return result;
 }
 
-// add more tests here
+// division error test
+int div_zero_error_test() {
+	TEST_HEADER;
+
+	int a = 0;
+	int b;
+	b = 1/a;
+	return FAIL;
+}
+
+// system call handler test
+int system_call_handler_test() {
+	TEST_HEADER;
+
+	__asm__("int $0x80");
+	return FAIL;
+}
+
+// invalid opcode test
+int invalid_opcode_test() {
+	TEST_HEADER;
+	
+	__asm__("ud2");
+	return FAIL;
+}
 
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
@@ -57,4 +81,7 @@ int idt_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
+	// TEST_OUTPUT("zero div test", div_zero_error_test());
+	// TEST_OUTPUT("system call handler test", system_call_handler_test());
+	TEST_OUTPUT("invalid opcode test", invalid_opcode_test());
 }
