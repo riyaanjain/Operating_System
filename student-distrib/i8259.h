@@ -12,6 +12,10 @@
 #define MASTER_8259_PORT    0x20
 #define SLAVE_8259_PORT     0xA0
 
+/* Data for each PIC */
+#define MASTER_DATA   (MASTER_8259_PORT + 1)
+#define SLAVE_DATA    (SLAVE_8259_PORT + 1)
+
 /* Initialization control words to init each PIC.
  * See the Intel manuals for details on the meaning
  * of each word */
@@ -26,6 +30,14 @@
  * the interrupt number and sent out to the PIC
  * to declare the interrupt finished */
 #define EOI                 0x60
+
+/* Max number of IRQs per PIC and cascading */
+#define MASTER_MAX_IRQ      8
+#define SLAVE_MAX_IRQ       15
+#define CASCADE             2
+
+// mask to start off with
+#define PIC_MASK    0xFF
 
 /* Externally-visible functions */
 

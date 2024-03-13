@@ -1,6 +1,8 @@
 #include "tests.h"
 #include "x86_desc.h"
 #include "lib.h"
+#include "keyboard.h"
+#include "rtc.h"
 
 #define PASS 1
 #define FAIL 0
@@ -79,9 +81,13 @@ int invalid_opcode_test() {
 
 /* Test suite entry point */
 void launch_tests(){
-	TEST_OUTPUT("idt_test", idt_test());
+	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
 	// TEST_OUTPUT("zero div test", div_zero_error_test());
 	// TEST_OUTPUT("system call handler test", system_call_handler_test());
+<<<<<<< HEAD
 	TEST_OUTPUT("invalid opcode test", invalid_opcode_test());
+=======
+	// TEST_OUTPUT("invalid opcode test", invalid_opcode_test());
+>>>>>>> c9e13e803f3fa8c639eaf6b9f81ffc117a79e2fa
 }

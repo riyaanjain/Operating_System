@@ -1,5 +1,7 @@
 #define ASM     1
 #define SYSTEM_CALLS    0x80
+#define KEYBOARD_CALLS    33
+#define RTC_CALLS    40
 
 #define EXCEPTION(function_name, vector)            \
     .globl function_name                            ;\
@@ -28,6 +30,34 @@
         addl $4, %esp                               ;\
         iret
 
+#define KEYBOARD_INTERRUPT(function_name, vector) \
+    .globl function_name                            ;\
+    function_name:                                  ;\
+        pushl $0                                    ;\
+        pushal                                      ;\
+        pushfl                                      ;\
+        pushl $vector                               ;\
+    call keyboard_handler                           ;\
+        addl $4, %esp                               ;\
+        popfl                                       ;\
+        popal                                       ;\
+        addl $4, %esp                               ;\
+        iret
+
+#define RTC_INTERRUPT(function_name, vector) \
+    .globl function_name                            ;\
+    function_name:                                  ;\
+        pushl $0                                    ;\
+        pushal                                      ;\
+        pushfl                                      ;\
+        pushl $vector                               ;\
+    call RTC_handler                                ;\
+        addl $4, %esp                               ;\
+        popfl                                       ;\
+        popal                                       ;\
+        addl $4, %esp                               ;\
+        iret
+
 EXCEPTION(division_error, 0);
 EXCEPTION(debug, 1);
 EXCEPTION(non_maskable_interrupt, 2);
@@ -48,3 +78,5 @@ EXCEPTION_ERROR_CODE(alignment_check, 17);
 EXCEPTION(machine_check, 18);
 EXCEPTION(simd_floating_point_exception, 19);
 EXCEPTION(system_call, SYSTEM_CALLS);
+KEYBOARD_INTERRUPT(keyboard_call, KEYBOARD_CALLS);
+RTC_INTERRUPT(rtc_call, RTC_CALLS);
