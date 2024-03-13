@@ -85,9 +85,5 @@ void launch_tests(){
 	// launch your tests here
 	// TEST_OUTPUT("zero div test", div_zero_error_test());
 	// TEST_OUTPUT("system call handler test", system_call_handler_test());
-<<<<<<< HEAD
-	TEST_OUTPUT("invalid opcode test", invalid_opcode_test());
-=======
 	// TEST_OUTPUT("invalid opcode test", invalid_opcode_test());
->>>>>>> c9e13e803f3fa8c639eaf6b9f81ffc117a79e2fa
 }

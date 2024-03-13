@@ -59,15 +59,8 @@ void init_idt() {
     SET_IDT_ENTRY(idt[18], machine_check); // Machine Check
     SET_IDT_ENTRY(idt[19], simd_floating_point_exception); // SIMD Floating-Point Exception
     SET_IDT_ENTRY(idt[SYSTEM_CALLS], system_call); // System Calls
-<<<<<<< HEAD
-    SET_IDT_ENTRY(idt[KEYBOARD_CALLS], system_call); // Keyboard Calls
-    SET_IDT_ENTRY(idt[RTC_CALLS], system_call); // RTC Calls
-
-    lidt(idt_desc_ptr); // load the idt
-=======
     SET_IDT_ENTRY(idt[KEYBOARD_CALLS], keyboard_call); // Keyboard Calls
     SET_IDT_ENTRY(idt[RTC_CALLS], rtc_call); // RTC Calls
 
     lidt(idt_desc_ptr); //load the idt
->>>>>>> c9e13e803f3fa8c639eaf6b9f81ffc117a79e2fa
 }
