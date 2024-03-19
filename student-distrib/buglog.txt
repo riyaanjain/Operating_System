@@ -2,7 +2,7 @@ Bug #1 - Aryan, paging
 
 Date: 03/18/2024
 Problem: Not handling bits properly
-Fix: Read through documentation for the offsets in paging.h for memory bits, changed to 22 (4MB) and 12(4KB)
+Fix: Read through documentation for the offsets in paging.h for memory bits, changed to 22 (4MB) and 12(4KB). Also checking to make sure that different addresses are being set properly.
 
 Bug #2 - Aryan, paging
 
@@ -10,14 +10,27 @@ Date: 03/18/2024
 Problem: Control Registers not updating properly
 Fix: Include '$' before hex value
 
-Bug #3 - Aryan, paging
+Bug #3 - Aryan and Kushal, paging
 
-Date: 03/18/2024
-Problem: Boot Logging
-Fix: NOT FIXED YET
+Date: 03/19/2024
+Problem: Boot Loop
+Fix: Initially a TA told us that it was our ASM code, however our C code for setting the struct values in paging.c were not correct. We had to read through documentation and fix it accordingly.
 
-Bug #3 - Aryan, paging
+Bug #4 - Aryan, paging
 
 Date: 03/18/2024
 Problem: Syntax error when initializing page directory in paging.h
 Fix: Ended up not being a syntax error at that line itself, but when defining the typset the declaration after brackets was wrong
+
+Bug #5 - Aryan and Kushal, paging
+
+Date: 03/19/2024
+Problem: Struct issues in paging.h
+Fix: Had to abandon a method in which we defined 2 structs for 4KB and 4MB separately, made them into a union, and then only defined 1 PDE to be used when defining struct values in paging.C
+Instead, we combined the structs into 1 typedef and then combined the values since they are all 32-bits anyways. We created 1 PDE variable and 2 PTEs for manipulation in paging.c
+
+Bug #6 - Aryan and Kushal, paging
+
+Date: 03/19/2024
+Problem: Boot Loop
+Fix: Accessing the first 4KB page at the 0th index within an entire loop from 0 to the 1024 4-byte entries will cause paging to boot loop.
