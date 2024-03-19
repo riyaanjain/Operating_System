@@ -1,5 +1,14 @@
 #include "idt.h"
 
+/*
+ * Initializes the Interrupt Descriptor Table. Sets up handlers for exceptions system 
+ * calls and hardware interrupts and loads the IDT to enable interrupt handling
+ *
+ * Inputs: None
+ * Outputs: None
+ * Side Effects: Modifies and loads IDT for handling interrupts (exceptions, system calls, keyboard, RTC)
+ * Coverage: Handles all exceptions and specified interrupts.
+ */
 void init_idt() {
     int i;
 
