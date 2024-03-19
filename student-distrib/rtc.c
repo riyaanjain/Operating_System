@@ -7,7 +7,7 @@
 #define STATUS_REG_C    0X0C
 
 /* void init_RTC()
- *  Functionality: Sets up paging, configures page directory entries
+ *  Functionality: Sets up RTC interrupts and configs
  *  Arguments: None
  *  Return: None
  *  References: OSDev
@@ -34,7 +34,7 @@ void init_RTC() {
 }
 
 /* void RTC_handler()
- *  Functionality: Sets up paging, configures page directory entries
+ *  Functionality: Interrupt handler for RTC interrupts
  *  Arguments: None
  *  Return: None
  *  References: OSDev
