@@ -28,7 +28,7 @@ init_paging:
     # copy CR4 to enable support > 4 MB
     movl %cr4, %eax
     # Perform bitwise OR to set PSE bit (4th bit) for larger pages
-    orl $0x10, %eax
+    orl $0x00000010, %eax
     # put EAX back into cr4
     movl %eax, %cr4
 
