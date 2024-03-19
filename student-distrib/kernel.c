@@ -11,6 +11,7 @@
 #include "idt.h"
 #include "keyboard.h"
 #include "rtc.h"
+#include "paging.h"
 
 
 #define RUN_TESTS
@@ -140,6 +141,7 @@ void entry(unsigned long magic, unsigned long addr) {
         ltr(KERNEL_TSS);
     }
 
+
     /* Init the IDT */
     init_idt();
 
@@ -148,6 +150,9 @@ void entry(unsigned long magic, unsigned long addr) {
 
     /* Init the Keyboard */
     init_keyboard();
+
+    /*init paging */
+    setup_paging();
 
     /* Init the RTC */
     init_RTC();
