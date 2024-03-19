@@ -151,11 +151,11 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Init the Keyboard */
     init_keyboard();
 
-    /*init paging */
-    setup_paging();
-
     /* Init the RTC */
     init_RTC();
+
+    /*init paging */
+    setup_paging();
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */

@@ -6,6 +6,14 @@
 #define STATUS_REG_B    0X0B
 #define STATUS_REG_C    0X0C
 
+/* void init_RTC()
+ *  Functionality: Sets up paging, configures page directory entries
+ *  Arguments: None
+ *  Return: None
+ *  References: OSDev
+ ***********************************************************************************
+ *  
+ */
 void init_RTC() {
     /*Turning on IRQ8*/
     int rate;
@@ -25,6 +33,14 @@ void init_RTC() {
     enable_irq(RTC_irq);
 }
 
+/* void RTC_handler()
+ *  Functionality: Sets up paging, configures page directory entries
+ *  Arguments: None
+ *  Return: None
+ *  References: OSDev
+ ***********************************************************************************
+ *  
+ */
 void RTC_handler() {
     /*Uncomment this to test RTC*/
     //test_interrupts();

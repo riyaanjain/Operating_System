@@ -2,7 +2,7 @@
 
 # Sometimes ASM has issues with comments, possibly need to remove them while testing
 
-# void init_paging(page_directory);
+# void init_paging(page_directory_single);
 #
 # Interface: Register-based arguments (not C-style)
 #    Inputs: Physical address of page directory
