@@ -1,4 +1,4 @@
-#include "RTC.h"
+#include "rtc.h"
 
 #define RTC_INDEX       0x70
 #define CMOS            0x71
