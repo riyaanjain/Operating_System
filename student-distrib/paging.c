@@ -5,6 +5,14 @@
 
 #include "paging.h"
 
+/* void setup_paging()
+ *  Functionality: Sets up paging, configures page directory entries
+ *  Arguments: None
+ *  Return: None
+ *  References: OSDev
+ ***********************************************************************************
+ *  
+ */
  void setup_paging()
  {
     int i; // init var for outer loop for PDEs (1 for 4KB and 1 for 4MB)
@@ -25,7 +33,7 @@
                 page_directory_single[i].page_directory_entry_4KB.available_1 = 0;
                 page_directory_single[i].page_directory_entry_4KB.page_size = 0; 
                 page_directory_single[i].page_directory_entry_4KB.available_2 = 0;
-                page_directory_single[i].page_directory_entry_4KB.address_bits = ((int) page_directory_entry_single) >> 12; // ptindex under OSDev Manipulation
+                page_directory_single[i].page_directory_entry_4KB.address_bits = ((int) page_directory_entry_single) >> 12; // ptindex under OSDev Manipulation for MSB
         }
         if(i == 1) // check if we are at the second PDE
         {
@@ -46,7 +54,7 @@
                 page_directory_single[i].page_directory_entry_4MB.page_attribute_table = 0; // reserved (must be 0)
                 page_directory_single[i].page_directory_entry_4MB.upper_bits = 0; // may need to be swapped w/ lower bits, check
                 page_directory_single[i].page_directory_entry_4MB.reserved = 0; // reserved (must be 0)
-                page_directory_single[i].page_directory_entry_4MB.lower_bits = (0x400000) >> 22; // pdindex under OSDev Manipulation
+                page_directory_single[i].page_directory_entry_4MB.lower_bits = (0x400000) >> 22; // pdindex under OSDev Manipulation for MSB
                 /* 0x400000 comes from kernel loaded to physical address for 4MB */
         }
     }
@@ -73,6 +81,5 @@
         page_directory_single[j].page_directory_entry_4KB.available_2 = 0;
         page_directory_single[j].page_directory_entry_4KB.address_bits = j; // corresponding index
     }
-
-    init_paging((uint32_t*)page_directory_single);
+    init_paging((uint32_t*)page_directory_single); // call ASM function with our page directory
  }
