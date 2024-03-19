@@ -1,5 +1,23 @@
-Bug #1
+Bug #1 - Aryan, paging
 
-Date:
-Problem:
-Fix:
+Date: 03/18/2024
+Problem: Not handling bits properly
+Fix: Read through documentation for the offsets in paging.h for memory bits, changed to 22 (4MB) and 12(4KB)
+
+Bug #2 - Aryan, paging
+
+Date: 03/18/2024
+Problem: Control Registers not updating properly
+Fix: Include '$' before hex value
+
+Bug #3 - Aryan, paging
+
+Date: 03/18/2024
+Problem: Boot Logging
+Fix: NOT FIXED YET
+
+Bug #3 - Aryan, paging
+
+Date: 03/18/2024
+Problem: Syntax error when initializing page directory in paging.h
+Fix: Ended up not being a syntax error at that line itself, but when defining the typset the declaration after brackets was wrong
