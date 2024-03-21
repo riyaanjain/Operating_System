@@ -22,7 +22,7 @@ extern void setup_paging();
 
 
 /* Define the data structure for Page Directory Entry */
-typedef struct page_directory_entry_t{
+typedef struct __attribute__((packed)) page_directory_entry_t{
     uint32_t present                :1;
     uint32_t read_write             :1;
     uint32_t user_supervisor        :1;
@@ -36,7 +36,7 @@ typedef struct page_directory_entry_t{
 } page_directory_entry_t;
 
 /* Define the data structure for Page Table Entry */
-typedef struct  page_table_entry_t {
+typedef struct __attribute__((packed)) page_table_entry_t {
     uint32_t present                :1;
     uint32_t read_write             :1;
     uint32_t user_supervisor        :1;
@@ -53,9 +53,8 @@ typedef struct  page_table_entry_t {
 /* We initialize 1 page directory */
 page_directory_entry_t page_directory_single[ENTRIES] __attribute__ ((aligned (4096)));
 // 4096 comes from the fact that a page directory is made up of 4096 bytes
-// both tables contain 1024 4-byte entries
+// the table contains 1024 4-byte entries
 page_table_entry_t page_directory_entry_single[ENTRIES] __attribute__ ((aligned (4096)));
-page_table_entry_t page_directory_entry_vidmem[ENTRIES] __attribute__ ((aligned (4096)));
 
 #endif /* PAGING_H */
 

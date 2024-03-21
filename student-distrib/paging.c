@@ -40,11 +40,6 @@ void setup_paging() {
         }
         page_directory_entry_single[i].read_write           = 1; // writes allowed
         page_directory_entry_single[i].address_bits         = i; // set address bits to corresponding index
-
-        /*Initializing vidmem table entry*/
-        page_directory_entry_vidmem[i].read_write           = 1; // writes allowed
-        page_directory_entry_vidmem[i].cache_disable        = 1; // set cache disable
-        page_directory_entry_vidmem[i].address_bits         = i; // set address bits to corresponding index
     }
 
     init_paging((uint32_t)page_directory_single); // make call to the ASM function wih corresponding PDE
