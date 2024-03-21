@@ -12,11 +12,9 @@
 
 #define ENTRIES         1024
 #define KERNEL_MEMORY   0x400000
-#define USER_MEMORY     0x800000
 #define VIDEO_MEMORY    0xB8000
 #define TABLE_INDEX     0
 #define KERNEL_INDEX    1
-#define USERMEM_INDEX   32
 
 
 /* Calling the setup paging logic defined in setup_paging.c */

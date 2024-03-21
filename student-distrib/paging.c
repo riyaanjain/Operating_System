@@ -32,12 +32,6 @@ void setup_paging() {
     page_directory_single[KERNEL_INDEX].page_size       = 1; // must be 1  
     page_directory_single[KERNEL_INDEX].address_bits    = KERNEL_MEMORY >> 12; // ptindex under OSDev Manipulation to get MSB
 
-    page_directory_single[USERMEM_INDEX].present         = 1; // must be enabled
-    page_directory_single[USERMEM_INDEX].user_supervisor = 1; // must be enabled
-    page_directory_single[USERMEM_INDEX].read_write      = 1; // must be enabled
-    page_directory_single[USERMEM_INDEX].page_size       = 1; // must be enabled
-    page_directory_single[USERMEM_INDEX].address_bits    = USER_MEMORY >> 12; // ptindex under OSDev Manipulation to get MSB
-
     /* Initializing PTEs */
     for(i = 0; i < 1024; i++){
         /*Initializing table entry*/
