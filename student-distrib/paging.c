@@ -32,7 +32,7 @@ void setup_paging() {
     page_directory_single[KERNEL_INDEX].page_size       = 1; // must be 1  
     page_directory_single[KERNEL_INDEX].address_bits    = KERNEL_MEMORY >> 12; // ptindex under OSDev Manipulation to get MSB
 
-    /* Initializing PTEs */
+    /* Initializing PTE */
     for(i = 0; i < 1024; i++){
         /*Initializing table entry*/
         if(i  == VIDEO_MEMORY >> 12){
@@ -41,6 +41,5 @@ void setup_paging() {
         page_directory_entry_single[i].read_write           = 1; // writes allowed
         page_directory_entry_single[i].address_bits         = i; // set address bits to corresponding index
     }
-
     init_paging((uint32_t)page_directory_single); // make call to the ASM function wih corresponding PDE
 }
