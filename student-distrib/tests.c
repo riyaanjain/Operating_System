@@ -85,8 +85,8 @@ int before_vid_test(){
 	TEST_HEADER;
 
 	unsigned int BEFORE_VID_ADDR = 0xB7FFF;
-	int test;
-	int *ptr = (int*)BEFORE_VID_ADDR;
+	char test;
+	char *ptr = (char*)BEFORE_VID_ADDR;
 	test = *ptr;
 
 	return FAIL;	/*If kernel didn't freeze, FAIL returned*/
@@ -98,14 +98,14 @@ int before_vid_test(){
  * Inputs: None
  * Outputs: PASS
  * Side Effects: None
- * Coverage: 0xB8000 - 0xB8FFC
+ * Coverage: 0xB8000 - 0xB8FFF
  */
 int start_of_vid_test(){
 	TEST_HEADER;
 
 	unsigned int VIDEO_MEM_ADDR = 0xB8000;
-	int test;
-	int *ptr = (int*)VIDEO_MEM_ADDR;
+	char test;
+	char *ptr = (char*)VIDEO_MEM_ADDR;
 	test = *ptr;
 
 	return PASS;
@@ -117,14 +117,14 @@ int start_of_vid_test(){
  * Inputs: None
  * Outputs: PASS
  * Side Effects: None
- * Coverage: 0xB8FFC
+ * Coverage: 0xB8FFF
  */
 int end_of_vid(){
 	TEST_HEADER;
 
-	unsigned int END_OF_VID_ADDR = 0xB8FFC;
-	int test;
-	int *ptr = (int*)END_OF_VID_ADDR;
+	unsigned int END_OF_VID_ADDR = 0xB8FFF;
+	char test;
+	char *ptr = (char*)END_OF_VID_ADDR;
 	test = *ptr;
 
 	return PASS;
@@ -136,15 +136,15 @@ int end_of_vid(){
  * Inputs: None
  * Outputs: FAIL
  * Side Effects: Kernel freeze
- * Coverage: 0xB8FFD - 0x3FFFFF
+ * Coverage: 0xB9000 - 0x3FFFFF
  */
 int after_vid_test()
 {
 	TEST_HEADER;
 
-	unsigned int AFTER_VID_ADDR = 0xB8FFD;
-	int test;
-	int *ptr = (int *)AFTER_VID_ADDR;
+	unsigned int AFTER_VID_ADDR = 0xB9000;
+	char test;
+	char *ptr = (char*)AFTER_VID_ADDR;
 	test = *ptr;
 
 	return FAIL;	/*If kernel didn't freeze, FAIL returned*/
@@ -162,9 +162,8 @@ int before_kernel_page_test(){
 	TEST_HEADER;
 
 	unsigned int BEFORE_KERNEL_ADDR = 0x3FFFFF;
-
-	int test;
-	int *ptr = (int *)BEFORE_KERNEL_ADDR;
+	char test;
+	char *ptr = (char*)BEFORE_KERNEL_ADDR;
 	test = *ptr;
 	return FAIL;	/*If kernel didn't freeze, FAIL returned*/
 }
@@ -181,8 +180,8 @@ int start_of_kernel_test(){
 	TEST_HEADER;
 
 	unsigned int KERNEL_ADDR = 0x400000;
-	int test;
-	int *ptr = (int *)KERNEL_ADDR;
+	char test;
+	char *ptr = (char*)KERNEL_ADDR;
 	test = *ptr;
 
 	return PASS;
@@ -199,10 +198,10 @@ int start_of_kernel_test(){
 int bottom_kernel_page_test(){
 	TEST_HEADER;
 
-	unsigned int BOTTOM_OF_KERNEL = 0x7FFFFC;
+	unsigned int BOTTOM_OF_KERNEL = 0x7FFFFF;
 
-	int test;
-	int *ptr = (int *)BOTTOM_OF_KERNEL;
+	char test;
+	char *ptr = (char*)BOTTOM_OF_KERNEL;
 	test = *ptr;
 	return PASS;
 }
@@ -213,15 +212,15 @@ int bottom_kernel_page_test(){
  * Inputs: None
  * Outputs: FAIL
  * Side Effects: Kernel freeze
- * Coverage: 0x7FFFFD
+ * Coverage: 0x800000
  */
 int after_kernel(){
 	TEST_HEADER;
 
-	unsigned int OUT_OF_RANGE_ADDR = 0x7FFFFD;
+	unsigned int OUT_OF_RANGE_ADDR = 0x800000;
 
-	int test;
-	int *ptr = (int*)OUT_OF_RANGE_ADDR;
+	char test;
+	char *ptr = (char*)OUT_OF_RANGE_ADDR;
 	test = *ptr;
 	return FAIL;		/*If kernel didn't freeze, FAIL returned*/
 }
@@ -232,13 +231,13 @@ int after_kernel(){
  * Inputs: None
  * Outputs: FAIL
  * Side Effects: Kernel freeze
- * Coverage: 0x7FFFFD
+ * Coverage: 0x800000
  */
 int null_paging_test(){
 	TEST_HEADER;
 
-	int test;
-	int *ptr = NULL;
+	char test;
+	char *ptr = NULL;
 	test = *ptr;
 	return FAIL;		/*If kernel didn't freeze, FAIL returned*/
 }
@@ -251,18 +250,18 @@ int null_paging_test(){
 
 /* Test suite entry point */
 void launch_tests(){
-	//TEST_OUTPUT("idt_test", idt_test());
+	// TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
 	// TEST_OUTPUT("zero div test", div_zero_error_test());
 	// TEST_OUTPUT("system call handler test", system_call_handler_test());
 	// TEST_OUTPUT("invalid opcode test", invalid_opcode_test());
-	//TEST_OUTPUT("before vid", before_vid_test());
-	//TEST_OUTPUT("start_of_vid_test", start_of_vid_test());
-	//TEST_OUTPUT("end of vid", end_of_vid());
+	// TEST_OUTPUT("before vid", before_vid_test());
+	// TEST_OUTPUT("start_of_vid_test", start_of_vid_test());
+	// TEST_OUTPUT("end of vid", end_of_vid());
 	// TEST_OUTPUT("after_vid_test", after_vid_test());
-	//TEST_OUTPUT("before_kernel_page_test", before_kernel_page_test());
+	// TEST_OUTPUT("before_kernel_page_test", before_kernel_page_test());
 	// TEST_OUTPUT("start_of_kernel_test", start_of_kernel_test());
-	//TEST_OUTPUT("bottom_kernel_page_test", bottom_kernel_page_test());
-	//TEST_OUTPUT("out_of_range_paging_test", after_kernel());
-	//TEST_OUTPUT("null_paging_test", null_paging_test());
+	// TEST_OUTPUT("bottom_kernel_page_test", bottom_kernel_page_test());
+	// TEST_OUTPUT("out_of_range_paging_test", after_kernel());
+	// TEST_OUTPUT("null_paging_test", null_paging_test());
 }
