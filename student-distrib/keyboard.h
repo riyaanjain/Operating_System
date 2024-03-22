@@ -29,6 +29,10 @@
 #define ENTER                       '\n'
 #define BACKSPACE                   0x08
 
+#define BUFFER_LENGTH               128
+
+char keyboard_buffer[BUFFER_LENGTH];
+
 /* Initialize the keyboard */
 void init_keyboard();
 

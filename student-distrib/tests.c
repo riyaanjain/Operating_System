@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "keyboard.h"
 #include "rtc.h"
+#include "terminal.h"
 
 #define PASS 1
 #define FAIL 0
@@ -243,6 +244,45 @@ int null_paging_test(){
 }
 
 /* Checkpoint 2 tests */
+int test_terminal_read() {
+	int nbytes = 7;
+	char buf[nbytes];
+
+	keyboard_buffer[0] = 'H';
+	keyboard_buffer[1] = 'e';
+	keyboard_buffer[2] = 'l';
+	keyboard_buffer[3] = 'l';
+	keyboard_buffer[4] = 'o';
+	keyboard_buffer[5] = ' ';
+	keyboard_buffer[6] = 'W';
+	keyboard_buffer[7] = 'o';
+	keyboard_buffer[8] = 'r';
+	keyboard_buffer[9] = 'l';
+	keyboard_buffer[10] = 'd';
+	keyboard_buffer[11] = '\n';
+	terminal_read(0, buf, nbytes);
+	return nbytes;
+}
+
+int test_terminal_write() {
+	int nbytes = 7;
+	char buf[nbytes];
+	keyboard_buffer[0] = 'H';
+	keyboard_buffer[1] = 'e';
+	keyboard_buffer[2] = 'l';
+	keyboard_buffer[3] = 'l';
+	keyboard_buffer[4] = 'o';
+	keyboard_buffer[5] = ' ';
+	keyboard_buffer[6] = 'W';
+	keyboard_buffer[7] = 'o';
+	keyboard_buffer[8] = 'r';
+	keyboard_buffer[9] = 'l';
+	keyboard_buffer[10] = 'd';
+	keyboard_buffer[11] = '\n';
+	terminal_read(0, buf, nbytes);
+	terminal_write(0, buf, nbytes);
+	return nbytes;
+}
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -264,4 +304,7 @@ void launch_tests(){
 	// TEST_OUTPUT("bottom_kernel_page_test", bottom_kernel_page_test());
 	// TEST_OUTPUT("out_of_range_paging_test", after_kernel());
 	// TEST_OUTPUT("null_paging_test", null_paging_test());
+	// TEST_OUTPUT("terminal read test", test_terminal_read());
+	// TEST_OUTPUT("terminal read and write test", test_terminal_write());
+
 }

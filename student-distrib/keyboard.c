@@ -12,6 +12,7 @@ char lshift = 0;
 char rshift = 0;
 char ctrl = 0;
 char alt = 0;
+int kbd_buffer = 0;
 
 /* void init_keyboard()
  *  Functionality: Initializes the keyboard interrupt
@@ -34,6 +35,10 @@ void init_keyboard() {
 void keyboard_handler() {
     cli();
     uint8_t c = inb(keyboard_data_port);
+    if(ascii_1[c] == ENTER) {
+        keyboard_buffer[kbd_buffer] = '\n';
+        kbd_buffer = 0;
+    }
     if(c == 0x0 || c == LRALT_PRESS || c == LRALT_RELEASE) {
         send_eoi(keyboard_irq);
         sti();
@@ -88,6 +93,12 @@ void keyboard_handler() {
     if(lshift || rshift) {
         if(c < SCANCODES) {
             putc(ascii_2[c]);
+            keyboard_buffer[kbd_buffer] = ascii_2[c];
+            if(kbd_buffer == BUFFER_LENGTH-1) {
+                kbd_buffer = 0;
+            } else {
+                kbd_buffer++;
+            }
             send_eoi(keyboard_irq);
             sti();
             return;
@@ -99,19 +110,37 @@ void keyboard_handler() {
         sti();
         return;
     }
-    if(c < SCANCODES) { 
+    if(c < SCANCODES) {
         if(caps_lock == 1 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
             putc(ascii_2[c]);
+            keyboard_buffer[kbd_buffer] = ascii_2[c];
+            if(kbd_buffer == BUFFER_LENGTH-1) {
+                kbd_buffer = 0;
+            } else {
+                kbd_buffer++;
+            }
             send_eoi(keyboard_irq);
             sti();
             return;
         } else if (caps_lock == 0 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
             putc(ascii_1[c]);
+            keyboard_buffer[kbd_buffer] = ascii_1[c];
+            if(kbd_buffer == BUFFER_LENGTH-1) {
+                kbd_buffer = 0;
+            } else {
+                kbd_buffer++;
+            }
             send_eoi(keyboard_irq);
             sti();
             return;
         } else {
             putc(ascii_1[c]);
+            keyboard_buffer[kbd_buffer] = ascii_1[c];
+            if(kbd_buffer == BUFFER_LENGTH-1) {
+                kbd_buffer = 0;
+            } else {
+                kbd_buffer++;
+            }
             send_eoi(keyboard_irq);
             sti();
             return;
