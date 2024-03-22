@@ -39,7 +39,7 @@ void init_RTC() {
  */
 void RTC_handler() {
     /*Uncomment this to test RTC*/
-    test_interrupts();
+    //test_interrupts();
     
     outb(STATUS_REG_C, RTC_INDEX);	// select register C
     inb(CMOS);		    // just throw away contents
