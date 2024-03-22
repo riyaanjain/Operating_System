@@ -47,10 +47,12 @@ void RTC_handler() {
 }
 
 void change_RTC_rate(int rate) {
+    cli();
     char prev;
     rate &= 0x0F;			// rate must be above 2 and not over 15
     outb(STATUS_REG_A, RTC_INDEX);		// set index to register A, disable NMI
     prev = inb(CMOS);	// get initial value of register A
     outb(STATUS_REG_A, RTC_INDEX);		// reset index to A
     outb((prev & 0xF0) | rate, CMOS); //write only our rate to A. Note, rate is the bottom 4 bits. 0xF0 is to clear the upper bits of prev
+    sti();
 }
