@@ -14,5 +14,11 @@ void init_RTC();
 /* Handles RTC interrupt */
 void RTC_handler();
 
-void change_RTC_rate(int rate);
+int change_RTC_rate(int rate);
+
+int32_t RTC_read (int32_t fd, void* buf, int32_t nbytes);
+int32_t RTC_write (int32_t fd, const void* buf, int32_t nbytes);
+int32_t RTC_open (const uint8_t* filename);
+int32_t RTC_close (int32_t fd);
+
 #endif /* _RTC_H */

@@ -283,6 +283,17 @@ int test_terminal_write() {
 	terminal_write(0, buf, nbytes);
 	return nbytes;
 }
+
+int rtc_freq_test() {
+	RTC_open(0);
+	int check = -1;
+	int freq = 2; /*Set whatever frequency here*/
+	check = RTC_write(0, &freq, 0);
+	if(check == 0) {
+		return PASS;
+	}  
+	return FAIL;
+}
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -306,5 +317,5 @@ void launch_tests(){
 	// TEST_OUTPUT("null_paging_test", null_paging_test());
 	// TEST_OUTPUT("terminal read test", test_terminal_read());
 	// TEST_OUTPUT("terminal read and write test", test_terminal_write());
-
+	// TEST_OUTPUT("RTC high frequency test", rtc_freq_test());
 }
