@@ -14,4 +14,5 @@ void init_RTC();
 /* Handles RTC interrupt */
 void RTC_handler();
 
+void change_RTC_rate(int rate);
 #endif /* _RTC_H */
