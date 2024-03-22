@@ -194,10 +194,12 @@ void putc(uint8_t c) {
                 if(screen_y == 0) {
                     return;
                 } else {
-                    screen_x = NUM_COLS-1;
-                    screen_y--;
-                    *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
-                    *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+                    if(*(uint8_t *)(video_mem + ((NUM_COLS * (screen_y - 1) + (NUM_COLS-1)) << 1)) != ' ') {
+                        screen_x = NUM_COLS-1;
+                        screen_y--;
+                        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
+                        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+                    }
                 }
             } else {
                 screen_x--;

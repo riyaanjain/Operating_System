@@ -6,8 +6,6 @@
 #define STATUS_REG_B    0X0B
 #define STATUS_REG_C    0X0C
 
-#define MAX_FREQUENCY   1024
-
 /* void init_RTC()
  *  Functionality: Sets up RTC interrupts and configs
  *  Arguments: None
