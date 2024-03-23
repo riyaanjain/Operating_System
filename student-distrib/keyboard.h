@@ -8,7 +8,6 @@
 /*Keyboard IRQ index*/
 #define keyboard_irq                1
 #define keyboard_data_port          0x60
-#define keyboard_read_write_port    0x64
 
 #define char_z                      122
 #define char_a                      97

@@ -13,6 +13,9 @@ char rshift = 0;
 char ctrl = 0;
 char alt = 0;
 int kbd_buffer = 0;
+int overflow_block = 0;
+
+static void clear_buffer();
 
 /* void init_keyboard()
  *  Functionality: Initializes the keyboard interrupt
@@ -38,6 +41,25 @@ void keyboard_handler() {
     if(ascii_1[c] == ENTER) {
         keyboard_buffer[kbd_buffer] = '\n';
         kbd_buffer = 0;
+        putc('\n');
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+    if(ascii_1[c] == BACKSPACE) {
+        if(kbd_buffer > 0) {
+            kbd_buffer--;
+            keyboard_buffer[kbd_buffer] = 0x0;
+            putc(ascii_1[c]);
+            send_eoi(keyboard_irq);
+            sti();
+            return;
+        } else {
+            putc(ascii_1[c]);
+            send_eoi(keyboard_irq);
+            sti();
+            return;
+        }
     }
     if(c == 0x0 || c == LRALT_PRESS || c == LRALT_RELEASE) {
         send_eoi(keyboard_irq);
@@ -90,64 +112,58 @@ void keyboard_handler() {
         sti();
         return;
     }
-    if(lshift || rshift) {
-        if(c < SCANCODES) {
-            putc(ascii_2[c]);
-            keyboard_buffer[kbd_buffer] = ascii_2[c];
-            if(kbd_buffer == BUFFER_LENGTH-1) {
-                kbd_buffer = 0;
-            } else {
-                kbd_buffer++;
-            }
-            send_eoi(keyboard_irq);
-            sti();
-            return;
-        }
-    }
     if(ctrl == 1 && c == L_SCANCODE) {
+        kbd_buffer = 0;
+        clear_buffer();
         clear();
         send_eoi(keyboard_irq);
         sti();
         return;
     }
-    if(c < SCANCODES) {
-        if(caps_lock == 1 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
-            putc(ascii_2[c]);
-            keyboard_buffer[kbd_buffer] = ascii_2[c];
-            if(kbd_buffer == BUFFER_LENGTH-1) {
-                kbd_buffer = 0;
-            } else {
+    if(kbd_buffer != BUFFER_LENGTH-1) {
+        if(lshift || rshift) {
+            if(c < SCANCODES) {
+                putc(ascii_2[c]);
+                keyboard_buffer[kbd_buffer] = ascii_2[c];
                 kbd_buffer++;
+                send_eoi(keyboard_irq);
+                sti();
+                return;
             }
-            send_eoi(keyboard_irq);
-            sti();
-            return;
-        } else if (caps_lock == 0 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
-            putc(ascii_1[c]);
-            keyboard_buffer[kbd_buffer] = ascii_1[c];
-            if(kbd_buffer == BUFFER_LENGTH-1) {
-                kbd_buffer = 0;
-            } else {
-                kbd_buffer++;
-            }
-            send_eoi(keyboard_irq);
-            sti();
-            return;
-        } else {
-            putc(ascii_1[c]);
-            keyboard_buffer[kbd_buffer] = ascii_1[c];
-            if(kbd_buffer == BUFFER_LENGTH-1) {
-                kbd_buffer = 0;
-            } else {
-                kbd_buffer++;
-            }
-            send_eoi(keyboard_irq);
-            sti();
-            return;
         }
-    }
+        if(c < SCANCODES) {
+            if(caps_lock == 1 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
+                putc(ascii_2[c]);
+                keyboard_buffer[kbd_buffer] = ascii_2[c];
+                kbd_buffer++;
+                send_eoi(keyboard_irq);
+                sti();
+                return;
+            } else if (caps_lock == 0 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
+                putc(ascii_1[c]);
+                keyboard_buffer[kbd_buffer] = ascii_1[c];
+                kbd_buffer++;
+                send_eoi(keyboard_irq);
+                sti();
+                return;
+            } else {
+                putc(ascii_1[c]);
+                keyboard_buffer[kbd_buffer] = ascii_1[c];
+                kbd_buffer++;
+                send_eoi(keyboard_irq);
+                sti();
+                return;
+            }
+        }
+    }   
     send_eoi(keyboard_irq);
     sti();
     return;
 }
 
+void clear_buffer() {
+    int i;
+    for(i = 0; i < BUFFER_LENGTH; i++) {
+        keyboard_buffer[i] = 0x0;
+    }
+}

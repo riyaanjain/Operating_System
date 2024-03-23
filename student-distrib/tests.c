@@ -244,28 +244,18 @@ int null_paging_test(){
 }
 
 /* Checkpoint 2 tests */
-int test_terminal_read() {
-	int nbytes = 7;
-	char buf[nbytes];
 
-	keyboard_buffer[0] = 'H';
-	keyboard_buffer[1] = 'e';
-	keyboard_buffer[2] = 'l';
-	keyboard_buffer[3] = 'l';
-	keyboard_buffer[4] = 'o';
-	keyboard_buffer[5] = ' ';
-	keyboard_buffer[6] = 'W';
-	keyboard_buffer[7] = 'o';
-	keyboard_buffer[8] = 'r';
-	keyboard_buffer[9] = 'l';
-	keyboard_buffer[10] = 'd';
-	keyboard_buffer[11] = '\n';
-	terminal_read(0, buf, nbytes);
-	return nbytes;
-}
-
+/* Terminal read and write test
+ * 
+ * Checks that the buffer reads an input from the keyboard buffer and outputs that into 
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: c gets printed out 127 times and we'll see that it prints out c the same number of times whether nbytes is 
+ * 				 300 or 400
+ * Coverage: 0x800000
+ */
 int test_terminal_write() {
-	int nbytes = 7;
+	int nbytes = 12;
 	char buf[nbytes];
 	keyboard_buffer[0] = 'H';
 	keyboard_buffer[1] = 'e';
@@ -281,7 +271,33 @@ int test_terminal_write() {
 	keyboard_buffer[11] = '\n';
 	terminal_read(0, buf, nbytes);
 	terminal_write(0, buf, nbytes);
-	return nbytes;
+	return PASS;
+}
+
+/* Terminal overflow test
+ * 
+ * Checks that the buffer gets cutoff after 127 characters(excluding \n)
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: c gets printed out 127 times and we'll see that it prints out c the same number of times whether nbytes is 
+ * 				 300 or 400
+ * Coverage: 0x800000
+ */
+int test_terminal_overflow() {
+	int i;
+	int nbytes = 300;
+	char buf1[nbytes];
+	for(i = 0; i < nbytes; i++) {
+		buf1[i] = 'c';
+	}
+	terminal_write(0, buf1, nbytes);
+	nbytes = 400;
+	char buf2[nbytes];
+	for(i = 0; i < nbytes; i++) {
+		buf2[i] = 'c';
+	}
+	terminal_write(0, buf2, nbytes);
+	return PASS;
 }
 
 int rtc_freq_test() {
@@ -315,7 +331,7 @@ void launch_tests(){
 	// TEST_OUTPUT("bottom_kernel_page_test", bottom_kernel_page_test());
 	// TEST_OUTPUT("out_of_range_paging_test", after_kernel());
 	// TEST_OUTPUT("null_paging_test", null_paging_test());
-	// TEST_OUTPUT("terminal read test", test_terminal_read());
 	// TEST_OUTPUT("terminal read and write test", test_terminal_write());
+	// TEST_OUTPUT("terminal overflow test", test_terminal_overflow());
 	// TEST_OUTPUT("RTC high frequency test", rtc_freq_test());
 }
