@@ -4,6 +4,7 @@
 #include "keyboard.h"
 #include "rtc.h"
 #include "terminal.h"
+#include "filesys.h"
 
 #define PASS 1
 #define FAIL 0
@@ -310,6 +311,104 @@ int rtc_freq_test() {
 	}  
 	return FAIL;
 }
+
+int read_dentry_idx_test() {
+	directory_entry_t dentry;
+	int i;
+	for (i = 0; i < 15; i++) {
+		if (read_dentry_by_index(i, &dentry) == 0) {
+			printf(dentry.filename);
+			printf("\n");
+		} else {
+			return FAIL;
+		}
+	}
+	return PASS;
+}
+
+int read_dentry_name_test() {
+	directory_entry_t dentry;
+	char* filename = "frame0.txt";
+	if (read_dentry_by_name((uint8_t*)filename, &dentry) == 0) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int open_file_test() {
+	char* filename = "frame0.txt";
+	if (open_file((uint8_t*)filename) == 0) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int close_file_test() {
+	char* filename = "frame0.txt";
+	if (close_file((uint8_t*)filename) == 0) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int write_file_test() {
+	char* filename = "frame0.txt";
+	const void* buffer;
+	int32_t size = 0;
+	if (write_file((uint8_t*)filename, buffer, size) == -1) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int open_dir_test() {
+	char* file_dir = "fsdir";
+	if (open_directory((uint8_t*)file_dir) == 0) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int close_dir_test() {
+	char* file_dir = "fsdir";
+	if (close_directory((uint8_t*)file_dir) == 0) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int write_dir_test() {
+	char* file_directory = "fsdir";
+	const void* buffer;
+	int32_t size = 0;
+	if (write_directory((uint8_t*)file_directory, buffer, size) == -1) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int read_dir_test() {
+	char buffer[33];
+	int i;
+	int32_t size = 32;
+	memset(buffer, 0, 33);
+	for (i = 0; i < 15; i++) {
+		read_directory(0, buffer, size);
+		printf(buffer);
+		printf("\n");
+		memset(buffer, 0, 33);
+	}
+	return PASS;
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -334,4 +433,7 @@ void launch_tests(){
 	// TEST_OUTPUT("terminal read and write test", test_terminal_write());
 	// TEST_OUTPUT("terminal overflow test", test_terminal_overflow());
 	// TEST_OUTPUT("RTC high frequency test", rtc_freq_test());
+	// TEST_OUTPUT("read_dentry_name_test", read_dentry_name_test());
+	// TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test());
+	TEST_OUTPUT("read directory", read_dir_test());
 }
