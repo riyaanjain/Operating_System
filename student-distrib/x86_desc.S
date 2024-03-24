@@ -14,7 +14,6 @@
 
 .align 4
 
-
 tss_size:
     .long tss_bottom - tss - 1
 

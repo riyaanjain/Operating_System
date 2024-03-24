@@ -33,6 +33,8 @@ void i8259_init(void) {
     // restore masks
 	outb(master_mask, MASTER_DATA);
 	outb(slave_mask, SLAVE_DATA);
+
+    enable_irq(CASCADE);    //Enabling the slave port interrupts
 }
 
 /* Enable (unmask) the specified IRQ */

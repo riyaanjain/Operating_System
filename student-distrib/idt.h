@@ -33,6 +33,8 @@ extern void alignment_check();
 extern void machine_check();
 extern void simd_floating_point_exception();
 extern void system_call();
+extern void keyboard_call();
+extern void rtc_call();
 
 #endif /* ASM */
 #endif /* _idt_H */

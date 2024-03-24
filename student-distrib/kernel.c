@@ -9,6 +9,10 @@
 #include "debug.h"
 #include "tests.h"
 #include "idt.h"
+#include "keyboard.h"
+#include "rtc.h"
+#include "paging.h"
+
 
 #define RUN_TESTS
 
@@ -137,11 +141,21 @@ void entry(unsigned long magic, unsigned long addr) {
         ltr(KERNEL_TSS);
     }
 
+
     /* Init the IDT */
     init_idt();
 
     /* Init the PIC */
     i8259_init();
+
+    /* Init the Keyboard */
+    init_keyboard();
+
+    /* Init the RTC */
+    init_RTC();
+
+    /*init paging */
+    setup_paging();
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
