@@ -1,3 +1,5 @@
+Bugs for CP1
+
 Bug #1 - Aryan, paging
 
 Date: 03/18/2024
@@ -34,3 +36,9 @@ Bug #6 - Aryan and Kushal, paging
 Date: 03/19/2024
 Problem: Boot Loop
 Fix: Accessing the first 4KB page at the 0th index within an entire loop from 0 to the 1024 4-byte entries will cause paging to boot loop.
+
+Bugs for CP2
+
+Bug #7 - Aryan, Pranav, Riyaan, filesystem
+Problem: Displaying files for read_dentry_by_index
+Fix: We had to look inside the fsdir files to see how many files we wanted and kept changing our loop maximum value until we saw all the files we needed.
