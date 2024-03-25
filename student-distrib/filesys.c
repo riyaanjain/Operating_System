@@ -77,7 +77,7 @@ uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size) {
  *  IMPORTANT NOTICE FOR READER
  */
 uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size) {
-    /* TODO */
+    /* Check if filename exceeds max length (32 max length) */
     if (strlen((char*)(filename)) > 32) {
         return -1;
     }
