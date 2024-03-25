@@ -341,6 +341,7 @@ int read_small_file_test() {
 	uint8_t buf[187]; 
 	int32_t size = 187;
 	if (read_file((uint8_t*)filename, buf, size) != -1) {
+		printf("file_name: frame0.txt\n");
 		return PASS;
 	} else {
 		return FAIL;
@@ -411,7 +412,7 @@ void launch_tests(){
 	// TEST_OUTPUT("read_dentry_name_test", read_dentry_name_test());
 	// TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test()); // TEST 1 for CP2
 	// TEST_OUTPUT("read directory", read_dir_test());
-	// TEST_OUTPUT("read small file", read_small_file_test());
+	// TEST_OUTPUT("read small file", read_small_file_test()); // TEST 2 for CP2
 	// TEST_OUTPUT("read large file", read_large_file_test());
 	// TEST_OUTPUT("read exec file", read_exec_file_test());
 }
