@@ -54,3 +54,14 @@ Fix: Being aware of the different file types used and when to use functions such
 Bug # 10 - Aryan, Pranav, filesystem
 Problem: Extra smiley face ASCII char printed at the end of "verylargetextwithverylongname.txt"
 Fix: At first, I thought we had to subtract one from the length value we used for strcpy. When that took out both the x and the smiley face, we knew it was wrong. Instead, using putc instead of a printf got rid of the formatting errors.
+
+Bug # 11 - Kushal, RTC
+Problem: For the RTC write function I tried doing a function that would convert the passed in frequencies to match an index on the 
+array I created. This wasn't changing the frequencies as expected and would remain at the default 2 Hz frequency.
+Fix: I made a switch statement instead to convert the frequencies to the right index on the frequency array to manage each frquency.
+
+Bug # 12 - Kushal, keyboard
+Problem: The backspace key would fill up the keyboard buffer and not allow us to enter more characters as the backspace key was put into
+the keyboard buffer.
+Fix: To fix this I made a special case for backspace which would remove the previous character in the buffer and decrement the keyboard index 
+variable.

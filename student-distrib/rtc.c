@@ -49,6 +49,14 @@ void RTC_handler() {
     send_eoi(RTC_irq);
 }
 
+/* void change_RTC_rate()
+ *  Functionality: Function to change the RTC interrupt frequency
+ *  Arguments: rate -- the interrupt frequency rate that needs to be applied
+ *  Return: -1 if it fails and 0 on a success
+ *  References: OSDev
+ ***********************************************************************************
+ *  
+ */
 int change_RTC_rate(int rate) {
     if(rate == 0) {
         return -1;
@@ -64,11 +72,32 @@ int change_RTC_rate(int rate) {
     return 0;
 }
 
+/* void RTC_read()
+ *  Functionality: RTC read function
+ *  Arguments: fd -- file that is passed in
+ *             buf -- buffer that is passed in
+ *             nbytes -- number of bytes to be read
+ *  Return: returns 0 on success
+ *  References: OSDev
+ ***********************************************************************************
+ *  
+ */
 int32_t RTC_read (int32_t fd, void* buf, int32_t nbytes) {
     rtc_int = 0;
     while(rtc_int ==  0);
     return 0;
 }
+
+/* void RTC_read()
+ *  Functionality: RTC write function
+ *  Arguments: fd -- file that is passed in
+ *             buf -- buffer that is passed in to be written
+ *             nbytes -- number of bytes to be written
+ *  Return: -1 if it fails and 0 on a success
+ *  References: None
+ ***********************************************************************************
+ *  
+ */
 int32_t RTC_write (int32_t fd, const void* buf, int32_t nbytes) {
     int new_rate = *((int*)buf);
     int rate = 0;
@@ -108,12 +137,30 @@ int32_t RTC_write (int32_t fd, const void* buf, int32_t nbytes) {
     }
     return change_RTC_rate(rate);
 }
+
+/* void RTC_open()
+ *  Functionality: RTC open function
+ *  Arguments: filename -- file that is passed in
+ *  Return: returns 0
+ *  References: None
+ ***********************************************************************************
+ *  
+ */
 int32_t RTC_open (const uint8_t* filename) {
     int rate;
     rate = frequencies[0];
     change_RTC_rate(rate);
     return 0;
 }
+
+/* void RTC_open()
+ *  Functionality: RTC close function
+ *  Arguments: fd -- file that is passed in
+ *  Return: returns 0
+ *  References: None
+ ***********************************************************************************
+ *  
+ */
 int32_t RTC_close (int32_t fd) {
     return 0;
 }

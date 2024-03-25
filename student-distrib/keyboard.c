@@ -12,7 +12,7 @@ char lshift = 0;
 char rshift = 0;
 char ctrl = 0;
 char alt = 0;
-int kbd_buffer = 0;
+int kbd_buffer = 0;     /*Keyboard buffer index*/
 int overflow_block = 0;
 
 static void clear_buffer();
@@ -38,7 +38,7 @@ void init_keyboard() {
 void keyboard_handler() {
     cli();
     uint8_t c = inb(keyboard_data_port);
-    if(ascii_1[c] == ENTER) {
+    if(ascii_1[c] == ENTER) {   /*If enter is pressed we put the \n character on the screen and also sets the kbd_buffer to 0*/
         keyboard_buffer[kbd_buffer] = '\n';
         kbd_buffer = 0;
         putc('\n');
@@ -46,7 +46,10 @@ void keyboard_handler() {
         sti();
         return;
     }
-    if(ascii_1[c] == BACKSPACE) {
+
+    /*This block of code manages what happens when backspace is pressed. We decrement the kbd_buffer and set the 
+    previous character to a null pointer if kbd_buffer is greater than 0 else does nothing to the keyboard buffer*/
+    if(ascii_1[c] == BACKSPACE) {   
         if(kbd_buffer > 0) {
             kbd_buffer--;
             keyboard_buffer[kbd_buffer] = 0x0;
@@ -61,11 +64,15 @@ void keyboard_handler() {
             return;
         }
     }
+
+    /*If alt or null is pressed we do nothing*/
     if(c == 0x0 || c == LRALT_PRESS || c == LRALT_RELEASE) {
         send_eoi(keyboard_irq);
         sti();
         return;
     }
+
+    /*These if statements are to manage what happens when a special key is pressed*/
     if(c == CAPS_LOCK_PRESS) {
         if(caps_lock == 0) {
             caps_lock = 1;
@@ -112,6 +119,8 @@ void keyboard_handler() {
         sti();
         return;
     }
+
+    /*Special clear screen command*/
     if(ctrl == 1 && c == L_SCANCODE) {
         kbd_buffer = 0;
         clear_buffer();
@@ -120,6 +129,9 @@ void keyboard_handler() {
         sti();
         return;
     }
+
+    /*This code controls what happens when any normal character is pressed. It prevents keyboard buffer overflow and
+    adds the entered characters into the keyboard buffer*/
     if(kbd_buffer != BUFFER_LENGTH-1) {
         if(lshift || rshift) {
             if(c < SCANCODES) {
@@ -161,9 +173,16 @@ void keyboard_handler() {
     return;
 }
 
+/* void clear_buffer()
+ *  Functionality: Clears the keyboard buffer
+ *  Arguments: None
+ *  Return: None
+ ***********************************************************************************
+ *  
+ */
 void clear_buffer() {
     int i;
     for(i = 0; i < BUFFER_LENGTH; i++) {
-        keyboard_buffer[i] = 0x0;
+        keyboard_buffer[i] = 0x0; /*Set all buffer elements to null*/
     }
 }

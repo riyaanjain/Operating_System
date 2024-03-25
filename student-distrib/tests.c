@@ -427,7 +427,7 @@ void launch_tests(){
 	// TEST_OUTPUT("null_paging_test", null_paging_test());
 	// TEST_OUTPUT("terminal read and write test", test_terminal_write());
 	// TEST_OUTPUT("terminal overflow test", test_terminal_overflow());
-	// TEST_OUTPUT("RTC frequency test", rtc_freq_test());
+	TEST_OUTPUT("RTC frequency test", rtc_freq_test());
 	// TEST_OUTPUT("read_dentry_name_test", read_dentry_name_test());
 	// TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test()); // TEST 1 for CP2
 	// TEST_OUTPUT("read directory", read_dir_test());

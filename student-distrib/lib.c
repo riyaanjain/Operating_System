@@ -189,7 +189,7 @@ void putc(uint8_t c) {
                 }
             }
         }
-    } else if(c == 0x08) {
+    } else if(c == 0x08) {      /*Backspace functionality. The previous character is set to a blank space*/
             if(screen_x == 0) {
                 if(screen_y == 0) {
                     return;
@@ -208,7 +208,7 @@ void putc(uint8_t c) {
                 *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
                 *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
             }
-    } else if(screen_x == NUM_COLS-1) {
+    } else if(screen_x == NUM_COLS-1) { /*When the column reaches the end of the screen*/
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
@@ -222,7 +222,7 @@ void putc(uint8_t c) {
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
-    update_cursor(screen_x, screen_y);
+    update_cursor(screen_x, screen_y);  /*Updating the cursor after each function*/
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);
