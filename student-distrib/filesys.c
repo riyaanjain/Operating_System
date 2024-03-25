@@ -79,7 +79,7 @@ uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size) {
 uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size) {
     /* TODO */
     /* Check if filename exceeds max length (32 max length) */
-    if (strlen(filename) > 32) {
+    if (strlen((char*)filename) > 32) {
         return -1;
     }
     directory_entry_t dentry;
