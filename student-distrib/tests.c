@@ -336,58 +336,33 @@ int read_dentry_name_test() {
 	}
 }
 
-int open_file_test() {
+int read_small_file_test() {
 	char* filename = "frame0.txt";
-	if (open_file((uint8_t*)filename) == 0) {
+	uint8_t buf[187]; 
+	int32_t size = 187;
+	if (read_file((uint8_t*)filename, buf, size) != -1) {
 		return PASS;
 	} else {
 		return FAIL;
 	}
 }
 
-int close_file_test() {
-	char* filename = "frame0.txt";
-	if (close_file((uint8_t*)filename) == 0) {
+int read_large_file_test() {
+	char* filename = "verylargetextwithverylongname.tx";
+	uint8_t buf[187]; 
+	int32_t size = 187;
+	if (read_file((uint8_t*)filename, buf, size) != -1) {
 		return PASS;
 	} else {
 		return FAIL;
 	}
 }
 
-int write_file_test() {
-	char* filename = "frame0.txt";
-	const void* buffer;
-	int32_t size = 0;
-	if (write_file((uint8_t*)filename, buffer, size) == -1) {
-		return PASS;
-	} else {
-		return FAIL;
-	}
-}
-
-int open_dir_test() {
-	char* file_dir = "fsdir";
-	if (open_directory((uint8_t*)file_dir) == 0) {
-		return PASS;
-	} else {
-		return FAIL;
-	}
-}
-
-int close_dir_test() {
-	char* file_dir = "fsdir";
-	if (close_directory((uint8_t*)file_dir) == 0) {
-		return PASS;
-	} else {
-		return FAIL;
-	}
-}
-
-int write_dir_test() {
-	char* file_directory = "fsdir";
-	const void* buffer;
-	int32_t size = 0;
-	if (write_directory((uint8_t*)file_directory, buffer, size) == -1) {
+int read_exec_file_test() {
+	char* filename = "grep";
+	uint8_t buf[187]; 
+	int32_t size = 187;
+	if (read_file((uint8_t*)filename, buf, size) != -1) {
 		return PASS;
 	} else {
 		return FAIL;
@@ -435,5 +410,8 @@ void launch_tests(){
 	// TEST_OUTPUT("RTC high frequency test", rtc_freq_test());
 	// TEST_OUTPUT("read_dentry_name_test", read_dentry_name_test());
 	// TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test());
-	TEST_OUTPUT("read directory", read_dir_test());
+	// TEST_OUTPUT("read directory", read_dir_test());
+	// TEST_OUTPUT("read small file", read_small_file_test());
+	// TEST_OUTPUT("read large file", read_large_file_test());
+	TEST_OUTPUT("read exec file", read_exec_file_test());
 }

@@ -62,7 +62,7 @@ uint32_t close_file(const uint8_t* filename) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t write_file(const uint8_t* filename, const void* buffer, int32_t size) {
+uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size) {
     return -1;
 }
 
@@ -74,9 +74,23 @@ uint32_t write_file(const uint8_t* filename, const void* buffer, int32_t size) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t read_file(const uint8_t* filename, const void* buffer, int32_t size) {
+uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size) {
     /* TODO */
-    return 0;
+    if (strlen(filename) > 32) {
+        return -1;
+    }
+    directory_entry_t dentry;
+    int i;
+    read_dentry_by_name(filename, &dentry);
+    int32_t length = read_data(dentry.inode_number, 0, buffer, size);
+    if (length != -1) {
+        for (i = 0; i < length; i++) {
+            printf("%c", ((char*)buffer)[i]);
+        }
+        printf("\n");
+        return 0;
+    } 
+    return -1;
 }
 
 /* Directory functions */
@@ -121,7 +135,7 @@ uint32_t close_directory(const uint8_t* file_directory) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t write_directory(const uint8_t* file_directory, const void* buffer, int32_t size) {
+uint32_t write_directory(const uint8_t* file_directory, void* buffer, int32_t size) {
     return -1;
 }
 
@@ -141,10 +155,12 @@ uint32_t read_directory(const uint8_t* file_directory, void* buffer, int32_t siz
     /* The index in boot entries block is dir_entires (read directory entry
        at a particular position within the boot block)*/
     directory_entry_t temp; // temp var to hold directory_entry indexes
-    read_dentry_by_index(file_count, &temp); // call funct with passed index
+    int ret = read_dentry_by_index(file_count, &temp); // call funct with passed index
+    if (ret == -1) {
+        return 0;
+    }
     int length = strlen((char*)temp.filename); // get length of filename
-    if(length > MAX_FILENAME_LENGTH) // 32 bytes should be max for filename
-    {
+    if (length > MAX_FILENAME_LENGTH) { // 32 bytes should be max for filename
         length = MAX_FILENAME_LENGTH; // if not max size for filename, only read what fits
     }
     memcpy(buffer, temp.filename, length); // use memcpy to copy filename to buffer
@@ -183,13 +199,32 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
         return -1;
     }
 
-    buf = -1;
+    // init vars
+    int32_t num_read_bytes = 0;
+    int32_t data_idx = offset / DATA_BLOCK_SIZE;
+    int32_t block_offset = offset % DATA_BLOCK_SIZE;
 
-    int i;
-    for (i = offset; i < offset + length; i++) {
-        // read from file with above inode
-        // place number of bytes read in buf
+    // loop while reading less than length
+    while (num_read_bytes < length && num_read_bytes + offset < (inode_block + inode)->length) {
+        if ((inode_block + inode)->data_blocks[data_idx] > boot_block->data_blocks - 1) { // if invalid data block
+            return -1;
+        }
+
+        // copy correct data block val to buf
+        uint32_t data_block_num = (inode_block + inode)->data_blocks[data_idx];
+        uint8_t* data_block_beginning = (uint8_t*)(boot_block + boot_block->inodes + 1);
+        buf[num_read_bytes] = *(data_block_beginning + (DATA_BLOCK_SIZE * data_block_num) + block_offset);
+
+        // increment offset and num bytes read
+        num_read_bytes++;
+        block_offset++;
+
+        // reset offset and move to next data index
+        if (block_offset > DATA_BLOCK_SIZE) {
+            block_offset = 0;
+            data_idx++;
+        }
     }
 
-    return buf;
+    return num_read_bytes;
 }

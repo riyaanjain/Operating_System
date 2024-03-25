@@ -45,13 +45,13 @@ void init_file_sys(uint32_t filesys_ptr);
 /* File function headers */
 uint32_t open_file(const uint8_t* filename);
 uint32_t close_file(const uint8_t* filename);
-uint32_t write_file(const uint8_t* filename, const void* buffer, int32_t size);
-uint32_t read_file(const uint8_t* filename, const void* buffer, int32_t size);
+uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size);
+uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size);
 
 /* Directory function headers */
 uint32_t open_directory(const uint8_t* file_directory);
 uint32_t close_directory(const uint8_t* file_directory);
-uint32_t write_directory(const uint8_t* file_directory, const void* buffer, int32_t size);
+uint32_t write_directory(const uint8_t* file_directory, void* buffer, int32_t size);
 uint32_t read_directory(const uint8_t* file_directory, void* buffer, int32_t size);
 
 /* read  data functions */
