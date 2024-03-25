@@ -50,3 +50,7 @@ Fix: We defined a global variable for file_count, and incremented it each time a
 Bug # 9 - Aryan, Pranav, filesystem
 Problem: Utilizing proper stdlib functions
 Fix: Being aware of the different file types used and when to use functions such as strcmp, strncpy, memcpy instead of arithmetic comparisons in C
+
+Bug # 10 - Aryan, Pranav, filesystem
+Problem: Extra smiley face ASCII char printed at the end of "verylargetextwithverylongname.txt"
+Fix: At first, I thought we had to subtract one from the length value we used for strcpy. When that took out both the x and the smiley face, we knew it was wrong. Instead, using putc instead of a printf got rid of the formatting errors.
