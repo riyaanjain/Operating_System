@@ -7,8 +7,8 @@
 /* General Driver Functions */
 
 /* void init_file_system()
- *  Functionality: 
- *  Arguments: 
+ *  Functionality: Init file system, set up necessary data structs
+ *  Arguments: uint32_t filesys_ptr - Pointer to start of file system in memory
  *  Return: None
  *  References: Week 9 Discussion
  ***********************************************************************************
@@ -68,27 +68,31 @@ uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size) {
 
 /* uint32_t read_file()
  *  Functionality: reads count bytes of data from file into buf, uses read_data
- *  Arguments: 
- *  Return:
+ *  Arguments: const uint8_t* filename - pointer to name of file to be read
+ *             void* buffer - pointer to buffer where data read from and file stored
+ *             int32_t size - number of bytes to be read from file
+ *  Return: Return 0, if failed return -1
  *  References: Week 9 Discussion
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
 uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size) {
     /* TODO */
+    /* Check if filename exceeds max length (32 max length) */
     if (strlen(filename) > 32) {
         return -1;
     }
     directory_entry_t dentry;
     int i;
+    /* Use read_dentry_by_name to read directory entry corresponding to filename */
     read_dentry_by_name(filename, &dentry);
     int32_t length = read_data(dentry.inode_number, 0, buffer, size);
-    if (length != -1) {
+    if (length != -1) { /* Print out buffer contents */
         for (i = 0; i < length; i++) {
             printf("%c", ((char*)buffer)[i]);
         }
         printf("\n");
-        return 0;
+        return 0; // return success
     } 
     return -1;
 }
@@ -168,6 +172,16 @@ uint32_t read_directory(const uint8_t* file_directory, void* buffer, int32_t siz
     return length; // return length of filename
 }
 
+
+/* int32_t read_dentry_by_name()
+ *  Functionality: Reads directory entry by filename and copies relevant information.
+ *  Arguments: fname - Pointer to the name of the file to search for.
+ *             dentry = Pointer to a directory entry structure where information will be copied.
+ *  Return: Return 0, if failed return -1
+ *  References: Week 9 Discussion
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t read_dentry_by_name(const uint8_t* fname, directory_entry_t* dentry) {
     int i;
     for (i = 0; i < NUM_FILES; i++) { // loop through all files
@@ -175,13 +189,21 @@ int32_t read_dentry_by_name(const uint8_t* fname, directory_entry_t* dentry) {
             strncpy(dentry->filename, (dentry_block + i)->filename, MAX_FILENAME_LENGTH); // copy over filename, file type, inode number
             dentry->file_type = (dentry_block + i)->file_type;
             dentry->inode_number = (dentry_block + i)->inode_number;
-            return 0;
+            return 0; // return success
         }
     }
-    return -1;
+    return -1; // file not found
 }
 
-
+/* int32_t read_dentry_by_index()
+ *  Functionality: Reads directory entry by index and copies relevant information.
+ *  Arguments: index - Index of the directory entry to be read.
+ *             dentry: Pointer to a directory entry structure where information will be copied.
+ *  Return: Return 0 on success, -1 for failure
+ *  References: Week 9 Discussion
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t read_dentry_by_index(uint32_t index, directory_entry_t* dentry) {
     if (index >= NUM_FILES || index < 0) { // check if index in range
         return -1;
@@ -192,7 +214,17 @@ int32_t read_dentry_by_index(uint32_t index, directory_entry_t* dentry) {
     return 0;
 }
 
-
+/* int32_t read_data()
+ *  Functionality: Reads data from a file inode starting at a specified offset and copies it into a buffer.
+ *  Arguments: inode - Inode number of the file from which data will be read.
+ *             offset - Offset within the file from where reading should begin.
+ *             buf - Pointer to a buffer where read data will be stored.
+ *             length - Number of bytes to read from the file.
+ *  Return: Number of bytes read, -1 for failure
+*  References: Week 9 Discussion
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length) {
     // if invalid inode num, return -1
     if (inode < 0 || inode > boot_block->inodes - 1) {
@@ -226,5 +258,5 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
         }
     }
 
-    return num_read_bytes;
+    return num_read_bytes; // return number of bytes read
 }
