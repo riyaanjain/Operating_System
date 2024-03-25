@@ -302,13 +302,27 @@ int test_terminal_overflow() {
 }
 
 int rtc_freq_test() {
-	RTC_open(0);
-	int check = -1;
-	int freq = 2; /*Set whatever frequency here*/
-	check = RTC_write(0, &freq, 0);
-	if(check == 0) {
-		return PASS;
-	}  
+	int i = 2;
+    int j;
+    int check = 0;
+
+    check = RTC_open(0);
+	clear();
+	while(i <= 1024) {
+		int check_ret = RTC_write(0, &i, 4);		//4 represents the number of bytes in an integer datatype
+		check += check_ret;
+		printf("Frequency test: %d", i);
+		printf(" Hz \n");
+		for(j = 0; j < i*5; j++) {
+			check_ret = RTC_read(0, 0, 0);
+			putc('1');
+		}
+		putc('\n');
+		i = i*2;
+	}
+    if(check == 0) {
+        return PASS;
+    } 
 	return FAIL;
 }
 
@@ -413,9 +427,9 @@ void launch_tests(){
 	// TEST_OUTPUT("null_paging_test", null_paging_test());
 	// TEST_OUTPUT("terminal read and write test", test_terminal_write());
 	// TEST_OUTPUT("terminal overflow test", test_terminal_overflow());
-	// TEST_OUTPUT("RTC high frequency test", rtc_freq_test());
+	// TEST_OUTPUT("RTC frequency test", rtc_freq_test());
 	// TEST_OUTPUT("read_dentry_name_test", read_dentry_name_test());
-	TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test()); // TEST 1 for CP2
+	// TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test()); // TEST 1 for CP2
 	// TEST_OUTPUT("read directory", read_dir_test());
 	// TEST_OUTPUT("read small file", read_small_file_test()); // TEST 2 for CP2
 	// TEST_OUTPUT("read large file", read_large_file_test());
