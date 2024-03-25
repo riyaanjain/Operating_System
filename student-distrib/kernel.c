@@ -11,6 +11,7 @@
 #include "idt.h"
 #include "keyboard.h"
 #include "rtc.h"
+#include "filesys.h"
 #include "paging.h"
 
 
@@ -154,7 +155,11 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Init the RTC */
     init_RTC();
 
-    /*init paging */
+    /* Init the File System */
+    module_t* mod = (module_t*)mbi->mods_addr;
+    init_file_sys(mod->mod_start);
+
+    /* Init Paging */
     setup_paging();
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the

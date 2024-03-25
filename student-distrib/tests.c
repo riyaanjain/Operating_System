@@ -4,6 +4,7 @@
 #include "keyboard.h"
 #include "rtc.h"
 #include "terminal.h"
+#include "filesys.h"
 
 #define PASS 1
 #define FAIL 0
@@ -310,6 +311,79 @@ int rtc_freq_test() {
 	}  
 	return FAIL;
 }
+
+int read_dentry_idx_test() {
+	directory_entry_t dentry;
+	int i;
+	for (i = 0; i < 15; i++) {
+		if (read_dentry_by_index(i, &dentry) == 0) {
+			printf(dentry.filename);
+			printf("\n");
+		} else {
+			return FAIL;
+		}
+	}
+	return PASS;
+}
+
+int read_dentry_name_test() {
+	directory_entry_t dentry;
+	char* filename = "frame0.txt";
+	if (read_dentry_by_name((uint8_t*)filename, &dentry) == 0) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int read_small_file_test() {
+	char* filename = "frame0.txt";
+	uint8_t buf[187]; 
+	int32_t size = 187;
+	if (read_file((uint8_t*)filename, buf, size) != -1) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int read_large_file_test() {
+	char* filename = "verylargetextwithverylongname.tx";
+	uint8_t buf[187]; 
+	int32_t size = 187;
+	if (read_file((uint8_t*)filename, buf, size) != -1) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int read_exec_file_test() {
+	char* filename = "grep";
+	uint8_t buf[187]; 
+	int32_t size = 187;
+	if (read_file((uint8_t*)filename, buf, size) != -1) {
+		return PASS;
+	} else {
+		return FAIL;
+	}
+}
+
+int read_dir_test() {
+	char buffer[33];
+	int i;
+	int32_t size = 32;
+	memset(buffer, 0, 33);
+	for (i = 0; i < 15; i++) {
+		read_directory(0, buffer, size);
+		printf(buffer);
+		printf("\n");
+		memset(buffer, 0, 33);
+	}
+	return PASS;
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -334,4 +408,10 @@ void launch_tests(){
 	// TEST_OUTPUT("terminal read and write test", test_terminal_write());
 	// TEST_OUTPUT("terminal overflow test", test_terminal_overflow());
 	// TEST_OUTPUT("RTC high frequency test", rtc_freq_test());
+	// TEST_OUTPUT("read_dentry_name_test", read_dentry_name_test());
+	// TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test());
+	// TEST_OUTPUT("read directory", read_dir_test());
+	// TEST_OUTPUT("read small file", read_small_file_test());
+	// TEST_OUTPUT("read large file", read_large_file_test());
+	TEST_OUTPUT("read exec file", read_exec_file_test());
 }
