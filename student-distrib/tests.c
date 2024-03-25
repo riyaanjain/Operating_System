@@ -315,9 +315,14 @@ int rtc_freq_test() {
 int read_dentry_idx_test() {
 	directory_entry_t dentry;
 	int i;
+	int j;
 	for (i = 0; i < 15; i++) {
 		if (read_dentry_by_index(i, &dentry) == 0) {
-			printf("file_name: %s, file_type: %u, file_size: %d", dentry.filename, dentry.file_type, (inode_block + dentry.inode_number)->length);
+			printf("file_name: ");
+			for (j = 0; j < MAX_FILENAME_LENGTH; j++) {
+				putc(dentry.filename[j]);
+			}
+			printf(", file_type: %u, file_size: %d", dentry.file_type, (inode_block + dentry.inode_number)->length);
 			printf("\n");
 		} else {
 			return FAIL;
@@ -410,7 +415,7 @@ void launch_tests(){
 	// TEST_OUTPUT("terminal overflow test", test_terminal_overflow());
 	// TEST_OUTPUT("RTC high frequency test", rtc_freq_test());
 	// TEST_OUTPUT("read_dentry_name_test", read_dentry_name_test());
-	// TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test()); // TEST 1 for CP2
+	TEST_OUTPUT("read_dentry_idx_test", read_dentry_idx_test()); // TEST 1 for CP2
 	// TEST_OUTPUT("read directory", read_dir_test());
 	// TEST_OUTPUT("read small file", read_small_file_test()); // TEST 2 for CP2
 	// TEST_OUTPUT("read large file", read_large_file_test());
