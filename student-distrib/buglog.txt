@@ -42,3 +42,11 @@ Bugs for CP2
 Bug #7 - Aryan, Pranav, Riyaan, filesystem
 Problem: Displaying files for read_dentry_by_index
 Fix: We had to look inside the fsdir files to see how many files we wanted and kept changing our loop maximum value until we saw all the files we needed.
+
+Bug #8 - Aryan, Pranav, filesystem
+Problem: Calculating index for read_directory
+Fix: We defined a global variable for file_count, and incremented it each time a filename was copied to our buffer. This variable was passed into our read_dentry_by_index call in read_directory
+
+Bug # 9 - Aryan, Pranav, filesystem
+Problem: Utilizing proper stdlib functions
+Fix: Being aware of the different file types used and when to use functions such as strcmp, strncpy, memcpy instead of arithmetic comparisons in C
