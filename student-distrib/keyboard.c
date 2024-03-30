@@ -1,9 +1,9 @@
 #include "keyboard.h"
 
-char ascii_1[SCANCODES] = { 0x0, 0x0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', BACKSPACE, ' ', 'q', 'w',
+char ascii_1[SCANCODES] = { 0x0, 0x0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', BACKSPACE, '\t', 'q', 'w',
                    'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', ENTER, 0x0,'a', 's', 'd', 'f', 'g', 'h', 'j', 'k',
                    'l', ';', '\'', '`', 0x0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0x0, 0x0, 0x0, ' '};
-char ascii_2[SCANCODES] = { 0x0, 0x0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', BACKSPACE, ' ', 'Q', 'W',
+char ascii_2[SCANCODES] = { 0x0, 0x0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', BACKSPACE, '\t', 'Q', 'W',
                    'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', ENTER, 0x0,'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K',
                    'L', ':', '"', '~', 0x0, '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0x0, 0x0, 0x0, ' '};
 
@@ -37,6 +37,7 @@ void init_keyboard() {
  */
 void keyboard_handler() {
     cli();
+    int i;
     uint8_t c = inb(keyboard_data_port);
     if(ascii_1[c] == ENTER) {   /*If enter is pressed we put the \n character on the screen and also sets the kbd_buffer to 0*/
         keyboard_buffer[kbd_buffer] = '\n';
@@ -45,6 +46,35 @@ void keyboard_handler() {
         send_eoi(keyboard_irq);
         sti();
         return;
+    }
+    if(ascii_1[c] == '\t') {
+        if(!(alt && ctrl && (lshift || rshift))) {
+            i = 0;
+            while(i < 3 && kbd_buffer != BUFFER_LENGTH-1) {  //3 represents the number of tab spaces
+                keyboard_buffer[kbd_buffer] = ' ';
+                kbd_buffer++;
+                putc(' ');
+                i++;
+            } 
+            send_eoi(keyboard_irq);
+            sti();
+            return;
+        } else {
+            i = 0;
+            while(i < 3 && kbd_buffer != BUFFER_LENGTH-1) {  //3 represents the number of tab spaces
+                keyboard_buffer[kbd_buffer] = ' ';
+                kbd_buffer++;
+                putc(' ');
+                i++;
+            }
+            while(i < 3) {
+                putc(' ');
+                i++;
+            }
+            send_eoi(keyboard_irq);
+            sti();
+            return;
+        }
     }
 
     /*This block of code manages what happens when backspace is pressed. We decrement the kbd_buffer and set the 
@@ -66,7 +96,7 @@ void keyboard_handler() {
     }
 
     /*If alt or null is pressed we do nothing*/
-    if(c == 0x0 || c == LRALT_PRESS || c == LRALT_RELEASE) {
+    if(c == 0x0) {
         send_eoi(keyboard_irq);
         sti();
         return;
@@ -119,6 +149,18 @@ void keyboard_handler() {
         sti();
         return;
     }
+    if(c == LRALT_PRESS) {
+        alt += 1;
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+    if(c == LRALT_RELEASE) {
+        alt -= 1;
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
 
     /*Special clear screen command*/
     if(ctrl == 1 && c == L_SCANCODE) {
@@ -167,7 +209,34 @@ void keyboard_handler() {
                 return;
             }
         }
-    }   
+    } else if(alt && ctrl && (lshift || rshift)) {
+        if(lshift || rshift) {
+            if(c < SCANCODES) {
+                putc(ascii_2[c]);
+                send_eoi(keyboard_irq);
+                sti();
+                return;
+            }
+        }
+        if(c < SCANCODES) {
+            if(caps_lock == 1 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
+                putc(ascii_2[c]);
+                send_eoi(keyboard_irq);
+                sti();
+                return;
+            } else if (caps_lock == 0 && ascii_1[c] <= char_z && ascii_1[c] >= char_a) {
+                putc(ascii_1[c]);
+                send_eoi(keyboard_irq);
+                sti();
+                return;
+            } else {
+                putc(ascii_1[c]);
+                send_eoi(keyboard_irq);
+                sti();
+                return;
+            }
+        }
+    }
     send_eoi(keyboard_irq);
     sti();
     return;
