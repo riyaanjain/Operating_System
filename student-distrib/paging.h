@@ -15,6 +15,10 @@
 #define VIDEO_MEMORY    0xB8000
 #define TABLE_INDEX     0
 #define KERNEL_INDEX    1
+#define USER_MEMORY     0x8000000
+#define MB_4            0x400000
+#define USERMEM_INDEX   USER_MEMORY/MB_4
+
 
 
 /* Calling the setup paging logic defined in setup_paging.c */

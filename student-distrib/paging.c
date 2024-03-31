@@ -14,7 +14,7 @@ extern void init_paging(uint32_t directory);
  *  Return: None
  *  References: OSDev
  ***********************************************************************************
- *  
+ *      
  */
 void setup_paging() {
     uint32_t i; // init var for loop
@@ -31,9 +31,20 @@ void setup_paging() {
     page_directory_single[KERNEL_INDEX].read_write      = 1; // writes may be allowed to 4MB page 
     page_directory_single[KERNEL_INDEX].page_size       = 1; // must be 1  
     page_directory_single[KERNEL_INDEX].address_bits    = KERNEL_MEMORY >> 12; // ptindex under OSDev Manipulation to get MSB
+    /* User Index for third PDE */
+    page_directory_single[USERMEM_INDEX].present         = 1; // must be 1 to reference a page table
+    page_directory_single[USERMEM_INDEX].read_write      = 1; // writes may be allowed to 4MB page 
+    page_directory_single[USERMEM_INDEX].user_supervisor = 1; // user can access this memory
+    page_directory_single[USERMEM_INDEX].page_size       = 1; // must be 1  
+    page_directory_single[USERMEM_INDEX].address_bits    = USER_MEMORY >> 12; // ptindex under OSDev Manipulation to get MSB
 
     /* Initializing PTE */
     for(i = 0; i < 1024; i++){
+        // Initializing remaining PDEs
+        if(page_directory_single[i].present == 0) {
+            page_directory_single[i].read_write   = 1;  //writes allowed 
+            page_directory_single[i].page_size    = 1;  //page size must be a single 4MB page
+        }
         /*Initializing table entry*/
         if(i  == VIDEO_MEMORY >> 12){
             page_directory_entry_single[i].present = 1; // must be 1
