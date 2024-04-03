@@ -31,13 +31,13 @@ void init_file_sys(uint32_t filesys_ptr) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t open_file(const uint8_t* filename) {
+int32_t open_file(const uint8_t* filename) {
     /* We want to use read_dentry_by_name to establish that we are opening a valid directory */
     directory_entry_t temp; // temp var to hold directory_entry
-    if (read_dentry_by_name(filename, &temp)) { // check entry value, if != 0 then return failure
-        return -1;
+    if (read_dentry_by_name(filename, &temp) == 0) { // check entry value, if != 0 then return failure
+        return 0;
     }
-    return 0;
+    return -1;
 }
 
 /* uint32_t close_file()
@@ -48,7 +48,7 @@ uint32_t open_file(const uint8_t* filename) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t close_file(const uint8_t* filename) {
+int32_t close_file(int32_t filename) {
     return 0;
 }
 
@@ -62,7 +62,7 @@ uint32_t close_file(const uint8_t* filename) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size) {
+int32_t write_file(int32_t filename, const void* buffer, int32_t size) {
     return -1;
 }
 
@@ -76,24 +76,25 @@ uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size) {
+int32_t read_file(int32_t filename, void* buffer, int32_t size) {
     /* Check if filename exceeds max length (32 max length) */
     if (strlen((char*)(filename)) > 32) {
         return -1;
     }
-    directory_entry_t dentry;
-    int i;
     /* Use read_dentry_by_name to read directory entry corresponding to filename */
-    read_dentry_by_name(filename, &dentry);
-    int32_t length = read_data(dentry.inode_number, 0, buffer, size);
-    if (length != -1) { /* Print out buffer contents */
-        for (i = 0; i < length; i++) {
-            printf("%c", ((char*)buffer)[i]);
-        }
-        printf("\n");
-        return 0; // return success
-    } 
-    return -1;
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*get_pcb_count()));
+    int32_t length = read_data(pcb->fd_table[filename].inode, pcb->fd_table[filename].file_pos, buffer, size);
+    // if (length != -1) { /* Print out buffer contents */
+    //     for (i = 0; i < length; i++) {
+    //         printf("%c", ((char*)buffer)[i]);
+    //     }
+    //     printf("\n");
+    //     return 0; // return success
+    // } 
+    if(length >= 0) {
+        return length;
+    }
+    return 0;
 }
 
 /* Directory functions */
@@ -106,14 +107,13 @@ uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t open_directory(const uint8_t* file_directory) {
+int32_t open_directory(const uint8_t* file_directory) {
     /* We want to use read_dentry_by_name to establish that we are opening a valid directory */
     directory_entry_t temp; // temp var to hold directory_entry
-    if(!read_dentry_by_name(file_directory, &temp)) // check entry value, if == 0 then return failure
-    {
-        return -1;
+    if (read_dentry_by_index((uint32_t)file_directory, &temp) == 0) { // check entry value, if != 0 then return failure
+        return 0;
     }
-    return 0;
+    return -1;
 }
 
 /* uint32_t close_directory()
@@ -124,7 +124,7 @@ uint32_t open_directory(const uint8_t* file_directory) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t close_directory(const uint8_t* file_directory) {
+int32_t close_directory(int32_t file_directory) {
     return 0;
 }
 
@@ -138,7 +138,7 @@ uint32_t close_directory(const uint8_t* file_directory) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t write_directory(const uint8_t* file_directory, void* buffer, int32_t size) {
+int32_t write_directory(int32_t file_directory, const void* buffer, int32_t size) {
     return -1;
 }
 
@@ -153,15 +153,17 @@ uint32_t write_directory(const uint8_t* file_directory, void* buffer, int32_t si
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-uint32_t read_directory(const uint8_t* file_directory, void* buffer, int32_t size) {
+int32_t read_directory(int32_t file_directory, void* buffer, int32_t size) {
     /* We want to call read_dentry_by_index with index in boot_block_t */
     /* The index in boot entries block is dir_entires (read directory entry
        at a particular position within the boot block)*/
     directory_entry_t temp; // temp var to hold directory_entry indexes
-    int ret = read_dentry_by_index(file_count, &temp); // call funct with passed index
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*get_pcb_count()));
+    int ret = read_dentry_by_index(pcb->fd_table[file_directory].file_pos, &temp); // call funct with passed index
     if (ret == -1) {
         return 0;
     }
+    pcb->fd_table[file_directory].file_pos += 1;
     int length = strlen((char*)temp.filename); // get length of filename
     if (length > MAX_FILENAME_LENGTH) { // 32 bytes should be max for filename
         length = MAX_FILENAME_LENGTH; // if not max size for filename, only read what fits
@@ -258,4 +260,20 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
     }
 
     return num_read_bytes; // return number of bytes read
+}
+
+int32_t empty_read (int32_t fd, void* buf, int32_t nbytes) {
+    return 0;
+}
+
+int32_t empty_write (int32_t fd, const void* buf, int32_t nbytes) {
+    return -1;
+}
+
+int32_t empty_open (const uint8_t* filename){
+    return -1;
+}
+
+int32_t empty_close (int32_t fd){
+    return -1;
 }

@@ -9,6 +9,8 @@
  * Side Effects: Modifies and loads IDT for handling interrupts (exceptions, system calls, keyboard, RTC)
  * Coverage: Handles all exceptions and specified interrupts.
  */
+
+extern void syscall_linkage();
 void init_idt() {
     int i;
 
@@ -67,7 +69,7 @@ void init_idt() {
     SET_IDT_ENTRY(idt[17], alignment_check); // Alignment Check
     SET_IDT_ENTRY(idt[18], machine_check); // Machine Check
     SET_IDT_ENTRY(idt[19], simd_floating_point_exception); // SIMD Floating-Point Exception
-    SET_IDT_ENTRY(idt[SYSTEM_CALLS], system_call); // System Calls
+    SET_IDT_ENTRY(idt[SYSTEM_CALLS], syscall_linkage); // System Calls
     SET_IDT_ENTRY(idt[KEYBOARD_CALLS], keyboard_call); // Keyboard Calls
     SET_IDT_ENTRY(idt[RTC_CALLS], rtc_call); // RTC Calls
 

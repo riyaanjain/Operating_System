@@ -4,6 +4,7 @@
 #ifndef ASM
 
 #include "lib.h"
+#include "system_calls.h"
 
 #define SYSTEM_CALLS    0x80
 #define NUM_EXCEPTIONS  20
