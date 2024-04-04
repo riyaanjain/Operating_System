@@ -210,7 +210,7 @@ int32_t open(const uint8_t* fname){
                 pcb->fd_table[i].file_operations.open = open_file;
                 pcb->fd_table[i].file_operations.close = close_file;
             }
-            return i + 1;
+            return i;
         }
     }
   return -1;
