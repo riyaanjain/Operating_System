@@ -25,39 +25,41 @@ syscall_linkage:
     # callee save registers
     # pushl %ebp
     # movl %esp, %ebp # move current stack into base
-    # For CP3, we only do 7 syscall functions
-    cmpl $0, %eax 
-    jbe ERR # if outside valid range, return error
-
-    cmpl $7, %eax
-    ja ERR # if outside valid range, return error
-    pushl %edi
+    pushl %ebx
     pushl %esi
-    pushl %ebx
+    pushl %edi
     pushfl # Push EFLAGS Register onto the stack
+    sti # Set Interrupt Flag in the flags register
 
-    pushl %edx
-    pushl %ecx
-    pushl %ebx
-    sti
+    # For CP3, we only do 6 syscall functions
+    cmpl $6, %eax 
+    jg ERR # if outside valid range, return error
 
+    cmpl $0, %eax
+    jz ERR # if outside valid range, return error
 
+    # pushing arguments in accordance with LIFO
+    pushl %edx # third arg
+    pushl %ecx # second arg
+    pushl %ebx # first arg
 
 
     call *jumptable(,%eax,4) # call jumptable
 
-    addl $12, %esp # restore stack pointer by 12 bytes
+    addl $12, %esp           # restore stack pointer by 12 bytes
     popfl # Pop EFLAGS register
     # callee teardown   
-    popl %ebx
-    popl %esi
     popl %edi
-    jmp return
-    
+    popl %esi
+    popl %ebx
+    # leave
+    iret
 ERR:
     movl $-1, %eax
-
-return:
+    popfl # Pop EFLAGS register
+    popl %edi # callee teardown
+    popl %esi
+    popl %ebx
     iret
 
 jumptable:
