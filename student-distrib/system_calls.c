@@ -23,7 +23,7 @@ int32_t halt(uint8_t status){
 
     tss.ss0 = KERNEL_DS;
     tss.esp0 = tss.esp0 = MB_8 - (KB_8*(parent_pcb->pid-1));
-    parent_return(parent_pcb->ebp,parent_pcb->esp,status);
+    parent_return(pcb->ebp,pcb->esp,status);
     return -1;
 }
 
