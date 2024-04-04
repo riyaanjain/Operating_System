@@ -43,7 +43,6 @@ syscall_linkage:
     pushl %ecx # second arg
     pushl %ebx # first arg
 
-
     call *jumptable(,%eax,4) # call jumptable
 
     addl $12, %esp           # restore stack pointer by 12 bytes
