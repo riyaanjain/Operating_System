@@ -2,12 +2,10 @@
 
 static int num_pcb = 0;
 extern void flush_tlb();
-extern void parent_return(uint32_t execute_ebp, uint32_t execute_esp, uint8_t status);
+extern void parent_return(uint32_t ebp, uint32_t esp, uint8_t status);
 extern void context_switch(uint32_t d, uint32_t c, uint32_t b, uint32_t a);
 
 int32_t halt(uint8_t status){
-    uint32_t ret;
-    ret = (uint32_t)status;
     int i;
 
     //Closing FDs
