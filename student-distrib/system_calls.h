@@ -44,8 +44,6 @@ typedef struct pcb_t {
     uint32_t esp;
     uint32_t ebp;
     uint32_t args[3];
-    uint32_t user_esp;
-    uint32_t user_eip;
     fd_t fd_table[NUM_OPEN_FILES];
 } pcb_t;
 
