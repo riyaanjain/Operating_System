@@ -174,7 +174,7 @@ int err_unopened(void) {
 	// haven't been opened. Nothing should be able to be closed
     for (i = 0; i < 8; i++) {
 	    if (-1 != ece391_close(i)) {
-			ece391_fdputs (1, (uint8_t*)"close unopened or invalid fd fail\n");
+			ece391_fdputs (1, (uint8_t*)"close unopened or invalid fd fail: \n");
 			fail = 2;
         }
     }

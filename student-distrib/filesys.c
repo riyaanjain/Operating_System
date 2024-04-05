@@ -184,6 +184,10 @@ int32_t read_directory(int32_t file_directory, void* buffer, int32_t size) {
  *  IMPORTANT NOTICE FOR READER
  */
 int32_t read_dentry_by_name(const uint8_t* fname, directory_entry_t* dentry) {
+    if (strlen((char*)fname) == 0) {
+        return -1;
+    }
+    
     int i;
     for (i = 0; i < NUM_FILES; i++) { // loop through all files
         if ((strncmp((int8_t*)(fname), (int8_t*)((dentry_block + i)->filename), MAX_FILENAME_LENGTH) == 0)) { // check if file names match

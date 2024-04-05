@@ -6,25 +6,30 @@ extern void parent_return(uint32_t execute_ebp, uint32_t execute_esp, uint8_t st
 extern void context_switch(uint32_t d, uint32_t c, uint32_t b, uint32_t a);
 
 int32_t halt(uint8_t status){
+    uint32_t ret;
+    ret = (uint32_t)status;
     int i;
-    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*(num_pcb)));
-    if(num_pcb != 0) {
-        num_pcb--;
-    }
-    pcb_t* parent_pcb = (pcb_t*)(MB_8-(KB_8*num_pcb));
-    uint32_t pa = MB_8 + ((parent_pcb->pid-1) * MB_4);
-    page_directory_single[USERMEM_INDEX].address_bits = pa >> 12;
-    flush_tlb();
 
-    //closing FDs
-    for(i = 0; i < NUM_OPEN_FILES; i++){
+    //Closing FDs
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*(num_pcb)));
+    for (i = 0; i < 8; i++) {
         pcb->fd_table[i].flags = 0;
     }
 
+    //Restoring parent data
+    num_pcb--;
+    uint32_t ebp = pcb->ebp;
+    uint32_t esp = pcb->esp;
     tss.ss0 = KERNEL_DS;
-    tss.esp0 = tss.esp0 = MB_8 - (KB_8*(parent_pcb->pid-1));
-    parent_return(pcb->ebp,pcb->esp,status);
-    return -1;
+    tss.esp0 = (MB_8-(KB_8*(pcb->parent_pid))) - 4;
+    pcb_t* parent_pcb = (pcb_t*)(MB_8 - (KB_8*(pcb->parent_pid + 1)));
+
+    //Restoring parent paging
+    page_directory_single[USERMEM_INDEX].address_bits = (MB_8 + MB_4*(parent_pcb->pid)) >> 12;
+    flush_tlb();
+
+    parent_return(ebp, esp, status);
+    return -1; //fails if it reaches here
 }
 
 
@@ -107,8 +112,7 @@ int32_t execute(const uint8_t* command) {
     uint32_t user_eip = *((uint32_t*)copyhelp_buffer);
     uint32_t user_esp = USER_MEMORY + MB_4 - 4;
     tss.ss0 = KERNEL_DS;
-    tss.esp0 = MB_8 - (KB_8*(num_pcb-1));
-
+    tss.esp0 = MB_8 - (KB_8*(num_pcb-1))-4;
     context_switch(user_esp, USER_CS, USER_DS, user_eip);
     
     return 0;
@@ -156,23 +160,29 @@ int32_t close(int32_t fd){
     }
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
     pcb->fd_table[fd].flags = 0;  
+    pcb->fd_table[fd].file_operations.close = empty_close;
+    pcb->fd_table[fd].file_operations.open = empty_open;
+    pcb->fd_table[fd].file_operations.read = empty_read;
+    pcb->fd_table[fd].file_operations.write = empty_write;
+    pcb->fd_table[fd].file_pos = 0;
+    pcb->fd_table[fd].inode = 0;
     return pcb->fd_table[fd].file_operations.close(fd);
 }
 
 int32_t read(int32_t fd, void* buf, int32_t nbytes){
     
-    if (buf == NULL || fd < 0 || fd > NUM_OPEN_FILES){
+    if (buf == NULL || fd < 0 || fd == 1 || fd > NUM_OPEN_FILES){
        return -1;
     }
-    pcb_t* cur_pcb_ptr = (pcb_t*)(MB_8 - (KB_8*num_pcb));
-    if(cur_pcb_ptr->fd_table[fd].flags == 0) {
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
+    if(pcb->fd_table[fd].flags == 0) {
         return -1;
     }
-    return cur_pcb_ptr->fd_table[fd].file_operations.read(fd,buf,nbytes);
+    return pcb->fd_table[fd].file_operations.read(fd,buf,nbytes);
 }
 
 int32_t write(int32_t fd, const void* buf, int32_t nbytes){
-    if (buf == NULL || fd < 0 || fd > NUM_OPEN_FILES){
+    if (buf == NULL || fd <= 0 || fd > NUM_OPEN_FILES){
        return -1;
     }
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));

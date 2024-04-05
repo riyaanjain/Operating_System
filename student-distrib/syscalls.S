@@ -32,11 +32,11 @@ syscall_linkage:
     sti # Set Interrupt Flag in the flags register
 
     # For CP3, we only do 6 syscall functions
-    cmpl $6, %eax 
+    cmpl $7, %eax 
     jg ERR # if outside valid range, return error
 
     cmpl $0, %eax
-    jz ERR # if outside valid range, return error
+    jle ERR # if outside valid range, return error
 
     # pushing arguments in accordance with LIFO
     pushl %edx # third arg
@@ -74,13 +74,12 @@ flush_tlb:
 .globl	parent_return
 .align 4
 parent_return:
-    pushl %ebp
     movl %esp, %ebp
-    movl 16(%ebp), %ebx   
+    movl 12(%ebp), %ebx   
     movl %ebx, %eax         
-    movl 12(%ebp), %ebx     
+    movl 8(%ebp), %ebx     
     movl %ebx, %esp  
-    movl 8(%ebp), %ebx       
+    movl 4(%ebp), %ebx       
     movl %ebx, %ebp
     leave
     ret 

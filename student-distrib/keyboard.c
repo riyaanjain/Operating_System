@@ -89,7 +89,6 @@ void keyboard_handler() {
             sti();
             return;
         } else {
-            putc(ascii_1[c]);
             send_eoi(keyboard_irq);
             sti();
             return;
