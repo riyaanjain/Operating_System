@@ -257,7 +257,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
         block_offset++;
 
         // reset offset and move to next data index
-        if (block_offset > DATA_BLOCK_SIZE) {
+        if (block_offset >= DATA_BLOCK_SIZE) {
             block_offset = 0;
             data_idx++;
         }
