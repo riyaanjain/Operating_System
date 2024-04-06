@@ -43,13 +43,11 @@ typedef struct pcb_t {
     uint32_t parent_pid;
     uint32_t esp;
     uint32_t ebp;
-    uint32_t args[3];
-    uint32_t user_esp;
-    uint32_t user_eip;
+    uint8_t* args[3];
     fd_t fd_table[NUM_OPEN_FILES];
 } pcb_t;
 
-void split(const uint8_t* command, uint8_t* fname, uint8_t args[MAX_NUM_ARGS][MAX_ARGS_LEN]);
+void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2, uint8_t* arg3);
 int32_t halt(uint8_t status);
 int32_t execute(const uint8_t* command);
 int32_t read(int32_t fd, void* buf, int32_t nbytes);
