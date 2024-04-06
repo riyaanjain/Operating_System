@@ -118,42 +118,6 @@ int32_t execute(const uint8_t* command) {
     return 0;
 }
 
-// void split(const uint8_t* command, uint8_t* fname, uint8_t* args1, uint8_t* arg2, uint8_t* arg3) {
-//     int i, j, k;
-//     i = j = 0;
-
-//     // Extract filename
-//     while (command[i] != ' ' && command[i] != '\0') {
-//         fname[j++] = command[i++];
-//     }
-//     fname[j] = '\0'; // Null-terminate filename
-
-//     // Skip spaces
-//     while (command[i] == ' ' && command[i] != '\0') {
-//         i++;
-//     }
-
-//     // Initialize all args to empty strings
-//     for (j = 0; j < MAX_NUM_ARGS; j++) {
-//         args[j][0] = '\0';
-//     }
-
-//     // Extract arguments
-//     for (k = 0; command[i] != '\0'; k++) {
-//         j = 0; 
-
-//         while (command[i] != ' ' && command[i] != '\0') {
-//             args[k][j++] = command[i++];
-//         }
-//         args[k][j] = '\0'; 
-
-//         // Skip spaces
-//         while (command[i] == ' ' && command[i] != '\0') {
-//             i++;
-//         }
-//     }
-// }
-
 void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2, uint8_t* arg3) {
     int i = 0, j = 0;
 
@@ -277,7 +241,7 @@ int32_t getargs(uint8_t* buf, int32_t nbytes){
         return -1;
     }
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8 * num_pcb));
-    
+
     strncpy((int8_t*)buf, (int8_t*)pcb->args, 32);
     return 0;
 }
