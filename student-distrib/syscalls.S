@@ -32,7 +32,7 @@ syscall_linkage:
     sti # Set Interrupt Flag in the flags register
 
     # For CP3, we only do 6 syscall functions
-    cmpl $7, %eax 
+    cmpl $6, %eax 
     jg ERR # if outside valid range, return error
 
     cmpl $0, %eax
@@ -62,7 +62,7 @@ ERR:
     iret
 
 jumptable:
-    .long 0x0, halt, execute, read, write, open, close, getargs
+    .long 0x0, halt, execute, read, write, open, close
 
 .globl flush_tlb
 .align	4

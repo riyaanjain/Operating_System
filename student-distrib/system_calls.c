@@ -236,15 +236,7 @@ int32_t open(const uint8_t* fname){
     }
   return -1;
 }
-int32_t getargs(uint8_t* buf, int32_t nbytes){
-    if (buf == NULL) {
-        return -1;
-    }
-    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8 * num_pcb));
 
-    strncpy((int8_t*)buf, (int8_t*)pcb->args, 32);
-    return 0;
-}
 int32_t get_pcb_count() {
     return num_pcb;
 }
