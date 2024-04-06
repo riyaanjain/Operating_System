@@ -65,3 +65,10 @@ Problem: The backspace key would fill up the keyboard buffer and not allow us to
 the keyboard buffer.
 Fix: To fix this I made a special case for backspace which would remove the previous character in the buffer and decrement the keyboard index 
 variable.
+
+Bugs for CP3
+
+Bug # 13 - Aryan, syscall linkage
+Problem: We had this error in which when typing ls, the value of EBX (our first arg) would always end up at 98 when calling read for the first file,
+thereby making the value of fd also 98
+Fix: Had to also include an 'sti' instruction to set the interrupt flag

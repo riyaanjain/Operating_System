@@ -12,5 +12,5 @@ void exc_handler(uint32_t id, struct registers regs, uint32_t error_code) {
     } else {
         printf("System Call Exception");
     }
-    while(1);
+    halt(255);
 }

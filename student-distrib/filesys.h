@@ -3,7 +3,7 @@
  */
 
 #include "lib.h"
-
+#include "system_calls.h"
 #ifndef FILESYS_H
 #define FILESYS_H
 
@@ -43,21 +43,26 @@ typedef struct inode_t{
 void init_file_sys(uint32_t filesys_ptr);
 
 /* File function headers */
-uint32_t open_file(const uint8_t* filename);
-uint32_t close_file(const uint8_t* filename);
-uint32_t write_file(const uint8_t* filename, void* buffer, int32_t size);
-uint32_t read_file(const uint8_t* filename, void* buffer, int32_t size);
+int32_t open_file(const uint8_t* filename);
+int32_t close_file(int32_t filename);
+int32_t write_file(int32_t filename, const void* buffer, int32_t size);
+int32_t read_file(int32_t filename, void* buffer, int32_t size);
 
 /* Directory function headers */
-uint32_t open_directory(const uint8_t* file_directory);
-uint32_t close_directory(const uint8_t* file_directory);
-uint32_t write_directory(const uint8_t* file_directory, void* buffer, int32_t size);
-uint32_t read_directory(const uint8_t* file_directory, void* buffer, int32_t size);
+int32_t open_directory(const uint8_t* file_directory);
+int32_t close_directory(int32_t file_directory);
+int32_t write_directory(int32_t file_directory, const void* buffer, int32_t size);
+int32_t read_directory(int32_t file_directory, void* buffer, int32_t size);
 
 /* read  data functions */
 int32_t read_dentry_by_name(const uint8_t* fname, directory_entry_t* dentry);
 int32_t read_dentry_by_index(uint32_t index, directory_entry_t* dentry);
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
+
+int32_t empty_read (int32_t fd, void* buf, int32_t nbytes);
+int32_t empty_write (int32_t fd, const void* buf, int32_t nbytes);
+int32_t empty_open (const uint8_t* filename);
+int32_t empty_close (int32_t fd);
 
 directory_entry_t* dentry_block;
 boot_block_t* boot_block;

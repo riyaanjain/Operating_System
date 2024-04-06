@@ -2,6 +2,7 @@
 #define _idt_H
 
 #include "x86_desc.h"
+#include "system_calls.h"
 
 #ifndef ASM
 

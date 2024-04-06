@@ -1,5 +1,5 @@
 #include "keyboard.h"
-
+#include "terminal.h"
 char ascii_1[SCANCODES] = { 0x0, 0x0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', BACKSPACE, '\t', 'q', 'w',
                    'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', ENTER, 0x0,'a', 's', 'd', 'f', 'g', 'h', 'j', 'k',
                    'l', ';', '\'', '`', 0x0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0x0, 0x0, 0x0, ' '};
@@ -43,6 +43,7 @@ void keyboard_handler() {
         keyboard_buffer[kbd_buffer] = '\n';
         kbd_buffer = 0;
         putc('\n');
+        set_enter();
         send_eoi(keyboard_irq);
         sti();
         return;
@@ -88,7 +89,6 @@ void keyboard_handler() {
             sti();
             return;
         } else {
-            putc(ascii_1[c]);
             send_eoi(keyboard_irq);
             sti();
             return;

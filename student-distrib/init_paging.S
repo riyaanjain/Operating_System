@@ -1,4 +1,5 @@
 .globl init_paging
+.align 4
 
 # Sometimes ASM has issues with comments, possibly need to remove them while testing
 

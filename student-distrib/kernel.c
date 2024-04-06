@@ -11,8 +11,8 @@
 #include "idt.h"
 #include "keyboard.h"
 #include "rtc.h"
-#include "filesys.h"
 #include "paging.h"
+#include "system_calls.h"
 
 
 #define RUN_TESTS
@@ -140,7 +140,7 @@ void entry(unsigned long magic, unsigned long addr) {
         tss.ss0 = KERNEL_DS;
         tss.esp0 = 0x800000;
         ltr(KERNEL_TSS);
-    }
+    }   
 
 
     /* Init the IDT */
@@ -176,8 +176,9 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Run tests */
     launch_tests();
 #endif
-    /* Execute the first program ("shell") ... */
-
+    /* Execute the first program ("shell") ... */   
+    clear();
+    execute((uint8_t*)"shell");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }
