@@ -37,8 +37,10 @@ int32_t execute(const uint8_t* command) {
     // if call halt, then return what halt returns
     directory_entry_t dentry;
     uint8_t fname[MAX_FILENAME_LENGTH];
-    uint8_t args[MAX_NUM_ARGS][MAX_ARGS_LEN] = {{0}};
-    split(command, fname, args); // Parse the arguments passed in
+    uint8_t arg1[MAX_FILENAME_LENGTH];
+    uint8_t arg2[MAX_FILENAME_LENGTH];
+    uint8_t arg3[MAX_FILENAME_LENGTH];
+    split(command, fname, arg1, arg2, arg3); // Parse the arguments passed in
     uint8_t copyhelp_buffer[4];
     uint32_t i; //loop variable
 
@@ -71,9 +73,9 @@ int32_t execute(const uint8_t* command) {
     } else {
         pcb->parent_pid = num_pcb-2;
     }
-    pcb->args[0] = args[0][0] + (args[0][1] << 8) + (args[0][2] << 16) + (args[0][3] << 24);
-    pcb->args[1] = args[1][0] + (args[1][1] << 8) + (args[1][2] << 16) + (args[1][3] << 24);
-    pcb->args[2] = args[2][0] + (args[2][1] << 8) + (args[2][2] << 16) + (args[2][3] << 24);
+    pcb->args[0] = arg1;
+    pcb->args[1] = arg2;
+    pcb->args[2] = arg3;
     if (read_data(dentry.inode_number, 24, copyhelp_buffer, 4) == -1) {
         return -1;
     }
@@ -116,41 +118,88 @@ int32_t execute(const uint8_t* command) {
     return 0;
 }
 
-void split(const uint8_t* command, uint8_t* fname, uint8_t args[MAX_NUM_ARGS][MAX_ARGS_LEN]) {
-    int i, j, k;
-    i = j = 0;
+// void split(const uint8_t* command, uint8_t* fname, uint8_t* args1, uint8_t* arg2, uint8_t* arg3) {
+//     int i, j, k;
+//     i = j = 0;
+
+//     // Extract filename
+//     while (command[i] != ' ' && command[i] != '\0') {
+//         fname[j++] = command[i++];
+//     }
+//     fname[j] = '\0'; // Null-terminate filename
+
+//     // Skip spaces
+//     while (command[i] == ' ' && command[i] != '\0') {
+//         i++;
+//     }
+
+//     // Initialize all args to empty strings
+//     for (j = 0; j < MAX_NUM_ARGS; j++) {
+//         args[j][0] = '\0';
+//     }
+
+//     // Extract arguments
+//     for (k = 0; command[i] != '\0'; k++) {
+//         j = 0; 
+
+//         while (command[i] != ' ' && command[i] != '\0') {
+//             args[k][j++] = command[i++];
+//         }
+//         args[k][j] = '\0'; 
+
+//         // Skip spaces
+//         while (command[i] == ' ' && command[i] != '\0') {
+//             i++;
+//         }
+//     }
+// }
+
+void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2, uint8_t* arg3) {
+    int i = 0, j = 0;
 
     // Extract filename
-    while (command[i] != ' ' && command[i] != '\0' && j < MAX_ARGS_LEN - 1) {
+    while (command[i] != ' ' && command[i] != '\0') {
         fname[j++] = command[i++];
     }
     fname[j] = '\0'; // Null-terminate filename
 
-    // Skip spaces
+    // Skip space between fname and arg1
     while (command[i] == ' ' && command[i] != '\0') {
         i++;
     }
 
-    // Initialize all args to empty strings
-    for (j = 0; j < MAX_NUM_ARGS; j++) {
-        args[j][0] = '\0';
+    // Extract arg1
+    j = 0;
+    while (command[i] != ' ' && command[i] != '\0') {
+        arg1[j++] = command[i++];
+    }
+    arg1[j] = '\0'; // Null-terminate arg1
+
+    // Skip space between arg1 and arg2
+    while (command[i] == ' ' && command[i] != '\0') {
+        i++;
     }
 
-    // Extract arguments
-    for (k = 0; k < MAX_NUM_ARGS && command[i] != '\0'; k++) {
-        j = 0; 
-
-        while (command[i] != ' ' && command[i] != '\0' && j < MAX_ARGS_LEN - 1) {
-            args[k][j++] = command[i++];
-        }
-        args[k][j] = '\0'; 
-
-        // Skip spaces
-        while (command[i] == ' ' && command[i] != '\0') {
-            i++;
-        }
+    // Extract arg2
+    j = 0;
+    while (command[i] != ' ' && command[i] != '\0') {
+        arg2[j++] = command[i++];
     }
+    arg2[j] = '\0'; // Null-terminate arg2
+
+    // Skip space between arg2 and arg3
+    while (command[i] == ' ' && command[i] != '\0') {
+        i++;
+    }
+
+    // Extract arg3
+    j = 0;
+    while (command[i] != ' ' && command[i] != '\0') {
+        arg3[j++] = command[i++];
+    }
+    arg3[j] = '\0'; // Null-terminate arg3
 }
+
 
 int32_t close(int32_t fd){
     if(fd < 2 || fd > NUM_OPEN_FILES){
@@ -224,11 +273,12 @@ int32_t open(const uint8_t* fname){
   return -1;
 }
 int32_t getargs(uint8_t* buf, int32_t nbytes){
-    if(buf == NULL){
+    if (buf == NULL) {
         return -1;
     }
-    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
-    strncpy((int8_t*)buf, (int8_t*)(pcb->args), nbytes);
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8 * num_pcb));
+    
+    strncpy((int8_t*)buf, (int8_t*)pcb->args, 32);
     return 0;
 }
 int32_t get_pcb_count() {
