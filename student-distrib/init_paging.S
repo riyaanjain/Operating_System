@@ -1,25 +1,9 @@
 .globl init_paging
 .align 4
-
-# Sometimes ASM has issues with comments, possibly need to remove them while testing
-
-# void init_paging(page_directory_single);
-#
-# Interface: Register-based arguments (not C-style)
-#    Inputs: Physical address of page directory
-#   Outputs: None
-# Registers: Clobbers EAX
-
-# Function sets up page directory, enables support for large pages
-# enables paging mode, and flushes Translation Lookaside Buffer
-
 init_paging:
     # callee save registers
     pushl %ebp
     movl %esp, %ebp # move current stack into base
-    pushl %ebx
-    pushl %esi
-    pushl %edi
 
     # pass in physical address of page and move into eax
     movl 8(%ebp), %eax
@@ -44,10 +28,5 @@ init_paging:
     movl %cr3, %eax
     # Reload CR3
     movl %eax, %cr3
-
-    # callee teardown
-    popl %edi
-    popl %esi
-    popl %ebx
     leave
     ret
