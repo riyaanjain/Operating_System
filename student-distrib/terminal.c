@@ -1,14 +1,12 @@
 #include "terminal.h"
 volatile uint32_t enter_pressed = 0;
 int32_t terminal_read (int32_t fd, void* buf, int32_t nbytes) {
-    sti();
     int i = 0;
     char* tmp_buffer = (char*)buf;
     while(enter_pressed != 1) {
 
     }
     enter_pressed = 0;
-    cli();
     while(i < nbytes && i < BUFFER_LENGTH && keyboard_buffer[i-1] != '\n' && keyboard_buffer[i] != 0x0) {
         tmp_buffer[i] = keyboard_buffer[i];
         i++;
