@@ -1,10 +1,18 @@
 #include "system_calls.h"
-
+/* Define global vars and external functions here */
 static int num_pcb = 0;
 extern void flush_tlb();
 extern void parent_return(uint32_t ebp, uint32_t esp, uint8_t status);
 extern void context_switch(uint32_t d, uint32_t c, uint32_t b, uint32_t a);
 
+/* halt()
+ *  Functionality: Halts the current process, closes file descriptors, restores parent process data and paging, and returns control to parent process.
+ *  Arguments: status - the status code indicating the reason for halting.
+ *  Return: -1 (fails if it reaches here)
+ *  References: Discussion 11
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t halt(uint8_t status){
     int i;
 
@@ -30,7 +38,17 @@ int32_t halt(uint8_t status){
     return -1; //fails if it reaches here
 }
 
-
+/* execute()
+ *  Functionality: Executes a program specified by the command.
+ *  Arguments: command - the command containing the program to execute and its arguments.
+ *  Return: 
+ *            -1: If program does not exist, filename is not an executable, or maximum supported PCBs reached.
+ *           256: If program dies by an exception.
+ *              0: If execution is successful.
+ *  References: Discussion 11
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t execute(const uint8_t* command) {
     // return -1 if program does not exist or filename is not an executable
     // return 256 if program dies by an exception
@@ -118,6 +136,20 @@ int32_t execute(const uint8_t* command) {
     return 0;
 }
 
+/* split()
+ *  Functionality: Parses the command string to extract the filename and its arguments.
+ *  Arguments:
+ *              command - the command string containing the filename and its arguments.
+ *              fname - a buffer to store the extracted filename.
+ *              arg1 - a buffer to store the first argument.
+ *              arg2 - a buffer to store the second argument.
+ *              arg3 - a buffer to store the third argument.
+ *  Return: None
+ *  References: Discussion 11
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
+
 void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2, uint8_t* arg3) {
     int i = 0, j = 0;
 
@@ -164,12 +196,23 @@ void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2,
     arg3[j] = '\0'; // Null-terminate arg3
 }
 
-
+/* close()
+ *  Functionality: Closes the file descriptor specified by fd.
+ *  Arguments:
+ *              fd - the file descriptor to close.
+ *  Return:
+ *              -1: If fd is less than 2 or greater than the number of open files.
+ *         return value of file_operations.close(): Result of calling the close function associated with the file descriptor.
+ *  References: Discussion 11
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t close(int32_t fd){
-    if(fd < 2 || fd > NUM_OPEN_FILES){
+    if(fd < 2 || fd > NUM_OPEN_FILES){ // checking if fd within range
         return -1;
     }
-    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb)); // get current pointer to pcb
+    /* Setting necessary struct parameters for closing */
     pcb->fd_table[fd].flags = 0;  
     pcb->fd_table[fd].file_operations.close = empty_close;
     pcb->fd_table[fd].file_operations.open = empty_open;
@@ -177,31 +220,70 @@ int32_t close(int32_t fd){
     pcb->fd_table[fd].file_operations.write = empty_write;
     pcb->fd_table[fd].file_pos = 0;
     pcb->fd_table[fd].inode = 0;
-    return pcb->fd_table[fd].file_operations.close(fd);
+    return pcb->fd_table[fd].file_operations.close(fd); // return close
 }
 
+/* read()
+ *  Functionality: Reads data from the file descriptor specified by fd into the buffer buf.
+ *  Arguments:
+ *              fd - the file descriptor from which to read.
+ *              buf - the buffer to store the read data.
+ *              nbytes - the number of bytes to read.
+ *  Return:
+ *              -1: If buf is NULL, fd is less than 0, fd is 1, fd is greater than the number of open files, or if the file associated with fd is not open.
+ *         return value of file_operations.read(): Result of calling the read function associated with the file descriptor.
+ *  References: Discussion 11
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t read(int32_t fd, void* buf, int32_t nbytes){
     
-    if (buf == NULL || fd < 0 || fd == 1 || fd > NUM_OPEN_FILES){
+    if (buf == NULL || fd < 0 || fd == 1 || fd > NUM_OPEN_FILES){ // validate params within range
        return -1;
     }
-    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
-    if(pcb->fd_table[fd].flags == 0) {
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb)); // get current pointer to pcb
+    if(pcb->fd_table[fd].flags == 0) { // check if fd not in use
         return -1;
     }
-    return pcb->fd_table[fd].file_operations.read(fd,buf,nbytes);
+    return pcb->fd_table[fd].file_operations.read(fd,buf,nbytes); // return read from filesys
 }
 
+/* write()
+ *  Functionality: Writes data from the buffer buf to the file descriptor specified by fd.
+ *  Arguments:
+ *              fd - the file descriptor to which to write.
+ *              buf - the buffer containing the data to write.
+ *              nbytes - the number of bytes to write.
+ *  Return:
+ *              -1: If buf is NULL, fd is less than or equal to 0, or fd is greater than the number of open files, or if the file associated with fd is not open.
+ *         return value of file_operations.write(): Result of calling the write function associated with the file descriptor.
+ *  References: Discussion 11
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
+
 int32_t write(int32_t fd, const void* buf, int32_t nbytes){
-    if (buf == NULL || fd <= 0 || fd > NUM_OPEN_FILES){
+    if (buf == NULL || fd <= 0 || fd > NUM_OPEN_FILES){ // validate params within range
        return -1;
     }
-    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
-    if(pcb->fd_table[fd].flags == 0) {
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb)); // get pointer to current pcb
+    if(pcb->fd_table[fd].flags == 0) { // check if fd not in use
         return -1;
     }
-    return pcb->fd_table[fd].file_operations.write(fd, buf, nbytes);
+    return pcb->fd_table[fd].file_operations.write(fd, buf, nbytes); // return write from filesys
 }
+
+/* open()
+ *  Functionality: Opens the file specified by fname and assigns a file descriptor to it.
+ *  Arguments:
+ *              fname - the name of the file to open.
+ *  Return:
+ *              -1: If read_dentry_by_name fails to find the file specified by fname, or if there are no available file descriptors, or if the file is of an unsupported type.
+ *          file descriptor: The file descriptor assigned to the opened file if successful.
+ *  References: Discussion 11
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 
 int32_t open(const uint8_t* fname){
     int i;
@@ -210,22 +292,24 @@ int32_t open(const uint8_t* fname){
         return -1;  
     }
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
+    /* looping thru file type possibilities */
     for(i = 2; i < NUM_OPEN_FILES; i++) {
+        /* setting relevant struct params */
         if(pcb->fd_table[i].flags == 0) {
             pcb->fd_table[i].file_pos = 0;
             pcb->fd_table[i].inode = dentry.inode_number;
             pcb->fd_table[i].flags = 1;
-            if(dentry.file_type == 0){             
+            if(dentry.file_type == 0){ // RTC device            
                 pcb->fd_table[i].file_operations.read = RTC_read;
                 pcb->fd_table[i].file_operations.write = RTC_write;
                 pcb->fd_table[i].file_operations.open = RTC_open;
                 pcb->fd_table[i].file_operations.close = RTC_close;
-            }else if (dentry.file_type == 1){         
+            }else if (dentry.file_type == 1){ // directory      
                 pcb->fd_table[i].file_operations.read = read_directory;
                 pcb->fd_table[i].file_operations.write = write_directory;
                 pcb->fd_table[i].file_operations.open = open_directory;
                 pcb->fd_table[i].file_operations.close = close_directory;
-            }else if (dentry.file_type == 2){         
+            }else if (dentry.file_type == 2){ // regular file       
                 pcb->fd_table[i].file_operations.read = read_file;
                 pcb->fd_table[i].file_operations.write = write_file;
                 pcb->fd_table[i].file_operations.open = open_file;
@@ -237,6 +321,14 @@ int32_t open(const uint8_t* fname){
   return -1;
 }
 
+/* get_pcb_count()
+ *  Functionality: Returns the number of process control blocks (PCBs) currently in use.
+ *  Arguments: None
+ *  Return: The number of PCBs currently in use.
+ *  References: None
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t get_pcb_count() {
     return num_pcb;
 }
