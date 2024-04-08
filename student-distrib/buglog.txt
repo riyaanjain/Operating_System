@@ -72,3 +72,11 @@ Bug # 13 - Aryan, syscall linkage
 Problem: We had this error in which when typing ls, the value of EBX (our first arg) would always end up at 98 when calling read for the first file,
 thereby making the value of fd also 98
 Fix: Had to also include an 'sti' instruction to set the interrupt flag
+
+Bug # 14 - Pranav, syscall linkage
+Problem: We were getting a page fault when a negative system call number was passed in
+Fix: Changed equal to zero check to less than or equal to zero check
+
+Bug # 15 - Pranav, stdin, stdout
+Problem: We were getting issues with stdin and stdout not working
+Fix: Changed it so stdin is only accessed by read and stdout is only accessed by write
