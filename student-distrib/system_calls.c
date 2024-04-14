@@ -16,8 +16,7 @@ extern void context_switch(uint32_t d, uint32_t c, uint32_t b, uint32_t a);
 int32_t halt(uint8_t status) {
     int i;
 
-    if (num_pcb == 1) {
-        num_pcb--;
+    if (num_pcb == 0) {
         execute((uint8_t*)"shell");
     }
 
@@ -159,7 +158,7 @@ void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2,
     int i = 0, j = 0;
 
     // Extract filename
-    while (command[i] != ' ' && command[i] != '\0') {
+    while (command[i] != ' ' && command[i] != '\0' && j < MAX_FILENAME_LENGTH) {
         fname[j++] = command[i++];
     }
     fname[j] = '\0'; // Null-terminate filename
@@ -171,10 +170,9 @@ void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2,
 
     // Extract arg1
     j = 0;
-    while (command[i] != ' ' && command[i] != '\0') {
+    while (command[i] != ' ' && command[i] != '\0' && j < MAX_FILENAME_LENGTH) {
         arg1[j++] = command[i++];
     }
-    arg1[j] = '\0'; // Null-terminate arg1
 
     // Skip space between arg1 and arg2
     while (command[i] == ' ' && command[i] != '\0') {
@@ -183,10 +181,9 @@ void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2,
 
     // Extract arg2
     j = 0;
-    while (command[i] != ' ' && command[i] != '\0') {
+    while (command[i] != ' ' && command[i] != '\0' && j < MAX_FILENAME_LENGTH) {
         arg2[j++] = command[i++];
     }
-    arg2[j] = '\0'; // Null-terminate arg2
 
     // Skip space between arg2 and arg3
     while (command[i] == ' ' && command[i] != '\0') {
@@ -195,10 +192,9 @@ void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2,
 
     // Extract arg3
     j = 0;
-    while (command[i] != ' ' && command[i] != '\0') {
+    while (command[i] != ' ' && command[i] != '\0' && j < MAX_FILENAME_LENGTH) {
         arg3[j++] = command[i++];
     }
-    arg3[j] = '\0'; // Null-terminate arg3
 }
 
 /* close()
@@ -243,7 +239,7 @@ int32_t close(int32_t fd){
  */
 int32_t read(int32_t fd, void* buf, int32_t nbytes){
     
-    if (buf == NULL || fd < 0 || fd == 1 || fd > NUM_OPEN_FILES){ // validate params within range
+    if (buf == NULL || fd < 0 || fd == 1 || fd > NUM_OPEN_FILES) { // validate params within range
        return -1;
     }
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb)); // get current pointer to pcb
@@ -346,18 +342,20 @@ int32_t getargs(uint8_t* buf, int32_t nbytes) {
     }
 
     if (pcb->args[2] == NULL) {
-        if (strlen(pcb->args[0]) + strlen(pcb->args[1]) >= nbytes) {
+        if (strlen((int8_t*) (pcb->args[0])) + strlen((int8_t*) (pcb->args[1])) >= nbytes) {
             return -1;
         }
     }
 
     if (pcb->args[1] == NULL) {
-        if (strlen(pcb->args[0]) >= nbytes) {
+        if (strlen((int8_t*) (pcb->args[0])) >= nbytes) {
             return -1;
         }
     }
 
-    strncpy(buf, pcb->args[0], nbytes);
+
+    strncpy((int8_t*) buf, (int8_t*) pcb->args[0], nbytes);
+
     return 0;
 }
 
