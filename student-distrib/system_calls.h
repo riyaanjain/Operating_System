@@ -11,7 +11,7 @@
 #define NUM_OPEN_FILES  8
 #define MAX_NUM_ARGS    3
 #define MAX_ARGS_LEN    100
-#define MAX_PCBs        5
+#define MAX_PCBs        6
 
 #define MAGICNUM1       0x7F
 #define MAGICNUM2       0x45
