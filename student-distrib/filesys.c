@@ -18,7 +18,6 @@ void init_file_sys(uint32_t filesys_ptr) {
     boot_block = (boot_block_t*)(filesys_ptr);
     dentry_block = boot_block->dir_entries;
     inode_block = (inode_t*)(boot_block + 1);
-    file_count = 0;
 }
 
 /* File functions */
@@ -80,13 +79,6 @@ int32_t read_file(int32_t fd, void* buffer, int32_t size) {
     /* Use read_dentry_by_name to read directory entry corresponding to filename */
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*get_pcb_count()));
     int32_t length = read_data(pcb->fd_table[fd].inode, pcb->fd_table[fd].file_pos, buffer, size);
-    // if (length != -1) { /* Print out buffer contents */
-    //     for (i = 0; i < length; i++) {
-    //         printf("%c", ((char*)buffer)[i]);
-    //     }
-    //     printf("\n");
-    //     return 0; // return success
-    // } 
     if(length >= 0) {
         pcb->fd_table[fd].file_pos += length;
         return length;
@@ -167,7 +159,6 @@ int32_t read_directory(int32_t file_directory, void* buffer, int32_t size) {
         length = MAX_FILENAME_LENGTH; // if not max size for filename, only read what fits
     }
     memcpy(buffer, temp.filename, length); // use memcpy to copy filename to buffer
-    file_count++;
     return length; // return length of filename
 }
 
@@ -250,7 +241,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
         uint8_t* data_block_beginning = (uint8_t*)(boot_block + boot_block->inodes + 1);
         buf[num_read_bytes] = *(data_block_beginning + (DATA_BLOCK_SIZE * data_block_num) + block_offset);
 
-        // increment offset and num bytes read
+        // increment block offset and num bytes read
         num_read_bytes++;
         block_offset++;
 
