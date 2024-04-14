@@ -15,12 +15,12 @@ int32_t terminal_read (int32_t fd, void* buf, int32_t nbytes) {
 }
 
 int32_t terminal_write (int32_t fd, const void* buf, int32_t nbytes) {
-    if(buf == NULL) {
+    if (buf == NULL) {
         return -1;
     }
     int i = 0;
     char* tmp_buffer = (char*)buf;
-    while(i < nbytes && i < BUFFER_LENGTH && tmp_buffer[i-1] != '\n'  && tmp_buffer[i] != 0x0) {
+    while(i < nbytes && tmp_buffer[i] != 0x0) {
         putc(tmp_buffer[i]);
         i++;
     }

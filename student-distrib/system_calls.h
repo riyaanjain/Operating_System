@@ -24,6 +24,12 @@
 #define ELF_OFFSET      24
 #define CLEAR_EBX       0x000F
 
+#define VIDMAP_START    0x8000000  /* 0x8000000 represents the start of the user address */
+#define VIDMAP_END      0x8400000  /* 0x8400000 represents the end of the user address */
+#define SCREENSTART     0x8800000  /* Reprsents 132 MB */
+#define VIDMAP          SCREENSTART/MB_4 // index for video mapping
+#define BLOCK_SIZE      4096 // 4KB block sizes (4096 bytes)        
+
 typedef struct file_operations_t {
     int32_t (*read)(int32_t fd, void* buf, int32_t nbytes);
     int32_t (*write)(int32_t fd, const void* buf, int32_t nbytes);
@@ -55,9 +61,9 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes);
 int32_t open(const uint8_t* filename);
 int32_t close(int32_t fd);
 int32_t get_pcb_count();
-// int32_t getargs(uint8_t* buf, int32_t nbytes);
-// int32_t vidmap(uint8_t** screen_start);
-// int32_t set_handler(int32_t signum, void* handler_address);
-// int32_t sigreturn(void);
+int32_t getargs(uint8_t* buf, int32_t nbytes);
+int32_t vidmap(uint8_t** screen_start);
+int32_t set_handler(int32_t signum, void* handler_address);
+int32_t sigreturn(void);
 
 #endif /* _system_calls_H */
