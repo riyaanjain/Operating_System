@@ -38,9 +38,11 @@ int32_t terminal_write (int32_t fd, const void* buf, int32_t nbytes) {
         return -1;
     }
     int i = 0;
-    char* tmp_buffer = (char*)buf;
-    while(i < nbytes && tmp_buffer[i] != 0x0) {
-        putc(tmp_buffer[i]);
+    char* tmp_buffer = (char*) buf;
+    while (i < nbytes) {
+        if (tmp_buffer[i] != 0x0) {
+            putc(tmp_buffer[i]);
+        }
         i++;
     }
     return i;
@@ -77,4 +79,4 @@ int32_t terminal_close (int32_t fd){
  */
  void set_enter() {
     enter_pressed = 1;
- }
+}
