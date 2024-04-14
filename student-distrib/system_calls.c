@@ -60,10 +60,8 @@ int32_t execute(const uint8_t* command) {
     // if call halt, then return what halt returns
     directory_entry_t dentry;
     uint8_t fname[MAX_FILENAME_LENGTH];
-    uint8_t arg1[MAX_FILENAME_LENGTH];
-    uint8_t arg2[MAX_FILENAME_LENGTH];
-    uint8_t arg3[MAX_FILENAME_LENGTH];
-    split(command, fname, arg1, arg2, arg3); // Parse the arguments passed in
+    uint8_t args[MAX_ARGS_LEN];
+    split(command, fname, args); // Parse the arguments passed in
     uint8_t copyhelp_buffer[4];
     uint32_t i; //loop variable
 
@@ -96,9 +94,7 @@ int32_t execute(const uint8_t* command) {
     } else {
         pcb->parent_pid = num_pcb-2;
     }
-    pcb->args[0] = arg1;
-    pcb->args[1] = arg2;
-    pcb->args[2] = arg3;
+    strncpy((int8_t*) pcb->args, (int8_t*) args, 100);
     if (read_data(dentry.inode_number, 24, copyhelp_buffer, 4) == -1) {
         return -1;
     }
@@ -155,7 +151,7 @@ int32_t execute(const uint8_t* command) {
  *  IMPORTANT NOTICE FOR READER
  */
 
-void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2, uint8_t* arg3) {
+void split(const uint8_t* command, uint8_t* fname, uint8_t* args) {
     int i = 0, j = 0;
 
     // Extract filename
@@ -169,32 +165,13 @@ void split(const uint8_t* command, uint8_t* fname, uint8_t* arg1, uint8_t* arg2,
         i++;
     }
 
-    // Extract arg1
+    // Extract args
     j = 0;
-    while (command[i] != ' ' && command[i] != '\0' && j < MAX_FILENAME_LENGTH) {
-        arg1[j++] = command[i++];
+    while (command[i] != '\0' && j < MAX_ARGS_LEN) {
+        args[j++] = command[i++];
     }
-
-    // Skip space between arg1 and arg2
-    while (command[i] == ' ' && command[i] != '\0') {
-        i++;
-    }
-
-    // Extract arg2
-    j = 0;
-    while (command[i] != ' ' && command[i] != '\0' && j < MAX_FILENAME_LENGTH) {
-        arg2[j++] = command[i++];
-    }
-
-    // Skip space between arg2 and arg3
-    while (command[i] == ' ' && command[i] != '\0') {
-        i++;
-    }
-
-    // Extract arg3
-    j = 0;
-    while (command[i] != ' ' && command[i] != '\0' && j < MAX_FILENAME_LENGTH) {
-        arg3[j++] = command[i++];
+    while(j < MAX_ARGS_LEN) {
+        args[j++] = '\0';
     }
 }
 
@@ -215,6 +192,7 @@ int32_t close(int32_t fd){
     }
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb)); // get current pointer to pcb
     /* Setting necessary struct parameters for closing */
+    int32_t retVal = pcb->fd_table[fd].file_operations.close(fd);
     pcb->fd_table[fd].flags = 0;  
     pcb->fd_table[fd].file_operations.close = empty_close;
     pcb->fd_table[fd].file_operations.open = empty_open;
@@ -222,7 +200,7 @@ int32_t close(int32_t fd){
     pcb->fd_table[fd].file_operations.write = empty_write;
     pcb->fd_table[fd].file_pos = 0;
     pcb->fd_table[fd].inode = 0;
-    return pcb->fd_table[fd].file_operations.close(fd); // return close
+    return retVal;
 }
 
 /* read()
@@ -337,26 +315,10 @@ int32_t get_pcb_count() {
 
 int32_t getargs(uint8_t* buf, int32_t nbytes) {
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
-
-    if (pcb->args[0] == NULL) {
+    if ((strlen((int8_t*)pcb->args)) == 0) {
         return -1;
     }
-
-    if (pcb->args[2] == NULL) {
-        if (strlen((int8_t*) (pcb->args[0])) + strlen((int8_t*) (pcb->args[1])) >= nbytes) {
-            return -1;
-        }
-    }
-
-    if (pcb->args[1] == NULL) {
-        if (strlen((int8_t*) (pcb->args[0])) >= nbytes) {
-            return -1;
-        }
-    }
-
-
-    strncpy((int8_t*) buf, (int8_t*) pcb->args[0], nbytes);
-
+    strncpy((int8_t*) buf, (int8_t*) pcb->args, nbytes);
     return 0;
 }
 
