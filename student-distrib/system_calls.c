@@ -13,8 +13,12 @@ extern void context_switch(uint32_t d, uint32_t c, uint32_t b, uint32_t a);
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-int32_t halt(uint8_t status){
+int32_t halt(uint8_t status) {
     int i;
+
+    if (num_pcb == 0) {
+        execute((uint8_t*)"shell");
+    }
 
     //Closing FDs
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*(num_pcb)));
@@ -331,4 +335,39 @@ int32_t open(const uint8_t* fname){
  */
 int32_t get_pcb_count() {
     return num_pcb;
+}
+
+int32_t getargs(uint8_t* buf, int32_t nbytes) {
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
+
+    if (pcb->args[0] == NULL) {
+        return -1;
+    }
+
+    if (pcb->args[2] == NULL) {
+        if (strlen(pcb->args[0]) + strlen(pcb->args[1]) >= nbytes) {
+            return -1;
+        }
+    }
+
+    if (pcb->args[1] == NULL) {
+        if (strlen(pcb->args[0]) >= nbytes) {
+            return -1;
+        }
+    }
+
+    strncpy(buf, pcb->args[0], nbytes);
+    return 0;
+}
+
+int32_t vidmap(uint8_t** screen_start) {
+
+}
+
+int32_t set_handler(int32_t signum, void* handler_address) {
+
+}
+
+int32_t sigreturn(void) {
+
 }

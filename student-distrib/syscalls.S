@@ -31,8 +31,8 @@ syscall_linkage:
     pushfl # Push EFLAGS Register onto the stack
     sti # Set Interrupt Flag in the flags register
 
-    # For CP3, we only do 6 syscall functions
-    cmpl $6, %eax 
+    # For CP4, we do 8 syscall functions
+    cmpl $8, %eax 
     jg ERR # if outside valid range, return error
 
     cmpl $0, %eax
@@ -62,7 +62,7 @@ ERR:
     iret
 
 jumptable:
-    .long 0x0, halt, execute, read, write, open, close
+    .long 0x0, halt, execute, read, write, open, close, getargs, vidmap
 
 .globl flush_tlb
 .align	4

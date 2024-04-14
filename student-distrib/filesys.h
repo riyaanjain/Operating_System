@@ -44,9 +44,9 @@ void init_file_sys(uint32_t filesys_ptr);
 
 /* File function headers */
 int32_t open_file(const uint8_t* filename);
-int32_t close_file(int32_t filename);
-int32_t write_file(int32_t filename, const void* buffer, int32_t size);
-int32_t read_file(int32_t filename, void* buffer, int32_t size);
+int32_t close_file(int32_t fd);
+int32_t write_file(int32_t fd, const void* buffer, int32_t size);
+int32_t read_file(int32_t fd, void* buffer, int32_t size);
 
 /* Directory function headers */
 int32_t open_directory(const uint8_t* file_directory);

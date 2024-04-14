@@ -55,9 +55,9 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes);
 int32_t open(const uint8_t* filename);
 int32_t close(int32_t fd);
 int32_t get_pcb_count();
-// int32_t getargs(uint8_t* buf, int32_t nbytes);
-// int32_t vidmap(uint8_t** screen_start);
-// int32_t set_handler(int32_t signum, void* handler_address);
-// int32_t sigreturn(void);
+int32_t getargs(uint8_t* buf, int32_t nbytes);
+int32_t vidmap(uint8_t** screen_start);
+int32_t set_handler(int32_t signum, void* handler_address);
+int32_t sigreturn(void);
 
 #endif /* _system_calls_H */

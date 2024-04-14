@@ -48,7 +48,7 @@ int32_t open_file(const uint8_t* filename) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-int32_t close_file(int32_t filename) {
+int32_t close_file(int32_t fd) {
     return 0;
 }
 
@@ -62,7 +62,7 @@ int32_t close_file(int32_t filename) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-int32_t write_file(int32_t filename, const void* buffer, int32_t size) {
+int32_t write_file(int32_t fd, const void* buffer, int32_t size) {
     return -1;
 }
 
@@ -76,14 +76,10 @@ int32_t write_file(int32_t filename, const void* buffer, int32_t size) {
  ***********************************************************************************
  *  IMPORTANT NOTICE FOR READER
  */
-int32_t read_file(int32_t filename, void* buffer, int32_t size) {
-    /* Check if filename exceeds max length (32 max length) */
-    if (strlen((char*)(filename)) > 32) {
-        return -1;
-    }
+int32_t read_file(int32_t fd, void* buffer, int32_t size) {
     /* Use read_dentry_by_name to read directory entry corresponding to filename */
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*get_pcb_count()));
-    int32_t length = read_data(pcb->fd_table[filename].inode, pcb->fd_table[filename].file_pos, buffer, size);
+    int32_t length = read_data(pcb->fd_table[fd].inode, pcb->fd_table[fd].file_pos, buffer, size);
     // if (length != -1) { /* Print out buffer contents */
     //     for (i = 0; i < length; i++) {
     //         printf("%c", ((char*)buffer)[i]);
@@ -92,9 +88,11 @@ int32_t read_file(int32_t filename, void* buffer, int32_t size) {
     //     return 0; // return success
     // } 
     if(length >= 0) {
+        pcb->fd_table[fd].file_pos += length;
         return length;
+    } else {
+        return -1;
     }
-    return 0;
 }
 
 /* Directory functions */
