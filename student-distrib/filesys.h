@@ -67,7 +67,6 @@ int32_t empty_close (int32_t fd);
 directory_entry_t* dentry_block;
 boot_block_t* boot_block;
 inode_t* inode_block;
-int file_count;
 
 
 #endif //FILESYS_H
