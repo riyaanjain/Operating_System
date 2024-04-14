@@ -20,11 +20,10 @@ int32_t terminal_write (int32_t fd, const void* buf, int32_t nbytes) {
     }
     int i = 0;
     char* tmp_buffer = (char*)buf;
-    while(i < nbytes && i < BUFFER_LENGTH && tmp_buffer[i] != 0x0) {
+    while(i < nbytes && tmp_buffer[i] != 0x0) {
         putc(tmp_buffer[i]);
         i++;
     }
-    return i;
 }
 
 int32_t terminal_open (const uint8_t* filename){

@@ -31,7 +31,7 @@ syscall_linkage:
     pushfl # Push EFLAGS Register onto the stack
     sti # Set Interrupt Flag in the flags register
 
-    # For CP4, we do 8 syscall functions
+    # For CP4, we only do 8 syscall functions
     cmpl $8, %eax 
     jg ERR # if outside valid range, return error
 
