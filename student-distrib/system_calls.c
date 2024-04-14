@@ -137,7 +137,7 @@ int32_t execute(const uint8_t* command) {
     return 0;
 }
 
-/* split()
+/* split(const uint8_t* command, uint8_t* fname, uint8_t* args)
  *  Functionality: Parses the command string to extract the filename and its arguments.
  *  Arguments:
  *              command - the command string containing the filename and its arguments.
@@ -313,12 +313,21 @@ int32_t get_pcb_count() {
     return num_pcb;
 }
 
+/*  int32_t getargs(uint8_t* buf, int32_t nbytes)
+ *  Functionality: Copies the args into the buf value
+ *  Arguments: uint8_t* buf - pointer to the address of the buf into which args are copied
+ *             int32_t nbytes - number of bytes to copy into buf from args
+ *  Return: 0 if successful, -1 on error
+ *  References: None
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t getargs(uint8_t* buf, int32_t nbytes) {
-    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
-    if ((strlen((int8_t*)pcb->args)) == 0) {
+    pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb)); //get the current pcb
+    if ((strlen((int8_t*)pcb->args)) == 0) { //checking if there are arguments returns -1 of none are found
         return -1;
     }
-    strncpy((int8_t*) buf, (int8_t*) pcb->args, nbytes);
+    strncpy((int8_t*) buf, (int8_t*) pcb->args, nbytes); //copying args to buf
     return 0;
 }
 
@@ -347,14 +356,14 @@ int32_t vidmap(uint8_t** screen_start) {
     page_directory_entry_single[0].present = 1;
     page_directory_entry_single[0].read_write = 1;
     page_directory_entry_single[0].user_supervisor = 1;
-    page_directory_entry_single[0].address_bits = (VIDEO_MEMORY / BLOCK_SIZE);
+    page_directory_entry_single[0].address_bits = VIDEO_MEMORY >> 12;
 
     /* Setting necessary flags for our page_directory */
     page_directory_single[VIDMAP].present = 1;
     page_directory_single[VIDMAP].read_write = 1;
     page_directory_single[VIDMAP].user_supervisor = 1;
     page_directory_single[VIDMAP].page_size = 0;
-    page_directory_single[VIDMAP].address_bits = ((int)(page_directory_entry_single) / BLOCK_SIZE);
+    page_directory_single[VIDMAP].address_bits = ((int)(page_directory_entry_single)) >> 12;
 
     /* Flush TLB */
     flush_tlb();
