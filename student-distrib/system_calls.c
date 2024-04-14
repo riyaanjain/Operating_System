@@ -360,8 +360,48 @@ int32_t getargs(uint8_t* buf, int32_t nbytes) {
     return 0;
 }
 
+/*  int32_t vidmap(uint8_t** screen_start)
+ *  Functionality: Maps the text-mode video memory into user space at a pre-set virtual address
+ *  Arguments: uint8_t** screen_start - pointer to a pointer that has the starting address of a screen buffer
+ *  Return: 0 if successful, -1 on error
+ *  References: Week 12 Discussion
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t vidmap(uint8_t** screen_start) {
 
+    /* Check if location is non-existent */
+    if(screen_start == NULL)
+    {
+        return -1;
+    }
+    /* Check if location is invalid, from Appendix C */
+    if((uint32_t)screen_start < VIDMAP_START || (uint32_t)screen_start > VIDMAP_END)
+    {
+        return -1;
+    }
+
+    /* Setting necessary flags for our VIDMEM portion */
+    page_directory_entry_single[0].present = 1;
+    //page_directory_entry_single[0].read_write = 1;
+    page_directory_entry_single[0].user_supervisor = 1;
+    page_directory_entry_single[0].address_bits = (VIDEO_MEMORY / BLOCK_SIZE);
+
+    /* Setting necessary flags for our page_directory */
+    page_directory_single[VIDMAP].present = 1;
+    page_directory_single[VIDMAP].read_write = 1;
+    page_directory_single[VIDMAP].user_supervisor = 1;
+    page_directory_single[VIDMAP].page_size = 0;
+    page_directory_single[VIDMAP].address_bits = ((int)(page_directory_entry_single) / BLOCK_SIZE);
+
+    /* Flush TLB */
+    flush_tlb();
+
+    /* Point pointer to screen_start to 132MB */
+    *screen_start = (uint8_t*)(SCREENSTART);
+    
+    /* Return success */
+    return 0;
 }
 
 int32_t set_handler(int32_t signum, void* handler_address) {
