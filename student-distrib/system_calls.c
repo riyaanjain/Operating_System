@@ -16,7 +16,8 @@ extern void context_switch(uint32_t d, uint32_t c, uint32_t b, uint32_t a);
 int32_t halt(uint8_t status) {
     int i;
 
-    if (num_pcb == 0) {
+    if (num_pcb == 1) {
+        num_pcb--;
         execute((uint8_t*)"shell");
     }
 
@@ -382,7 +383,7 @@ int32_t vidmap(uint8_t** screen_start) {
 
     /* Setting necessary flags for our VIDMEM portion */
     page_directory_entry_single[0].present = 1;
-    //page_directory_entry_single[0].read_write = 1;
+    page_directory_entry_single[0].read_write = 1;
     page_directory_entry_single[0].user_supervisor = 1;
     page_directory_entry_single[0].address_bits = (VIDEO_MEMORY / BLOCK_SIZE);
 
@@ -404,9 +405,9 @@ int32_t vidmap(uint8_t** screen_start) {
 }
 
 int32_t set_handler(int32_t signum, void* handler_address) {
-
+    return -1;
 }
 
 int32_t sigreturn(void) {
-
+    return -1;
 }

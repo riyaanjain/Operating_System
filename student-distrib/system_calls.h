@@ -24,10 +24,10 @@
 #define ELF_OFFSET      24
 #define CLEAR_EBX       0x000F
 
-#define VIDMAP_START    0x08000000  /* 0x08000000 represents the start of the user address */
-#define VIDMAP_END      0x08048000  /* 0x08048000 represents the end of the user address */
+#define VIDMAP_START    0x8000000  /* 0x8000000 represents the start of the user address */
+#define VIDMAP_END      0x8400000  /* 0x8400000 represents the end of the user address */
 #define SCREENSTART     0x8800000  /* Reprsents 132 MB */
-#define VIDMAP          34 // index for video mapping
+#define VIDMAP          SCREENSTART/MB_4 // index for video mapping
 #define BLOCK_SIZE      4096 // 4KB block sizes (4096 bytes)        
 
 typedef struct file_operations_t {
