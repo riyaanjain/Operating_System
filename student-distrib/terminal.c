@@ -24,6 +24,7 @@ int32_t terminal_write (int32_t fd, const void* buf, int32_t nbytes) {
         putc(tmp_buffer[i]);
         i++;
     }
+    return i;
 }
 
 int32_t terminal_open (const uint8_t* filename){
