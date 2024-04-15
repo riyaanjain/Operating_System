@@ -94,3 +94,11 @@ Fix: Removed a check in terminal write for a newline char
 Bug # 18 - Pranav, cat
 Problem: For ELF files, the full file would not print
 Fix: Changed the while loop logic to be simpler and added an if statement to check for null chars
+
+Bug # 19 - Aryan and Kushal, vidmap
+Problem: We kept getting the "abnormal" error when trying to execute fish
+Fix: Read through the documentation and recalculated the ending address (upper end of our invalid location check)
+
+Bug # 20 - Aryan, vidmap
+Problem: Compiler warnings for comparison and differing in signedness 
+Fix: Using the correct unsingned integer bit value, and proper pointer args since screen_start was a double pointer
