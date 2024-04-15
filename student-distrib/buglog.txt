@@ -80,3 +80,17 @@ Fix: Changed equal to zero check to less than or equal to zero check
 Bug # 15 - Pranav, stdin, stdout
 Problem: We were getting issues with stdin and stdout not working
 Fix: Changed it so stdin is only accessed by read and stdout is only accessed by write
+
+Bugs for CP4
+
+Bug # 16 - Pranav, cat
+Problem: For verylargetextwithverylongname.txt, the filename would overwrite the args causing them to be empty
+Fix: Had to include a check to make sure only 32 chars were written
+
+Bug # 17 - Pranav, cat
+Problem: For cat, only the first line would be printed to the screen
+Fix: Removed a check in terminal write for a newline char
+
+Bug # 15 - Pranav, cat
+Problem: For ELF files, the full file would not print
+Fix: Changed the while loop logic to be simpler and added an if statement to check for null chars
