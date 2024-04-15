@@ -91,6 +91,6 @@ Bug # 17 - Pranav, cat
 Problem: For cat, only the first line would be printed to the screen
 Fix: Removed a check in terminal write for a newline char
 
-Bug # 15 - Pranav, cat
+Bug # 18 - Pranav, cat
 Problem: For ELF files, the full file would not print
 Fix: Changed the while loop logic to be simpler and added an if statement to check for null chars
