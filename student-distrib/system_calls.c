@@ -375,10 +375,35 @@ int32_t vidmap(uint8_t** screen_start) {
     return 0;
 }
 
+/*
+ *  int32_t set_handler(int32_t signum, void* handler_address)
+ *  Functionality: Sets the handler function for the specified signal number
+ *  Arguments:
+ *      int32_t signum - the signal number
+ *      void* handler_address - the address of the handler function
+ *  Return:
+ *      -1
+ *  References:
+ *      N/A
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t set_handler(int32_t signum, void* handler_address) {
     return -1;
 }
 
+/*
+ *  int32_t sigreturn(void)
+ *  Functionality: Returns control to the point where the signal was received
+ *  Arguments:
+ *      None
+ *  Return:
+ *      -1
+ *  References:
+ *      N/A
+ ***********************************************************************************
+ *  IMPORTANT NOTICE FOR READER
+ */
 int32_t sigreturn(void) {
     return -1;
 }
