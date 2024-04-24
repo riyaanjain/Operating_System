@@ -24,6 +24,12 @@
 #define LRCTRL_RELEASE              0x9D
 #define LRALT_PRESS                 0x38
 #define LRALT_RELEASE               0xB8
+#define F1_PRESS                    0x3B
+#define F1_RELEASE                  0xBB
+#define F2_PRESS                    0x3C	
+#define F2_RELEASE                  0xBC
+#define F3_PRESS                    0x3D
+#define F3_RELEASE                  0xBD
 
 #define ENTER                       '\n'
 #define BACKSPACE                   0x08
@@ -31,11 +37,13 @@
 #define BUFFER_LENGTH               128
 
 char keyboard_buffer[BUFFER_LENGTH];
-
 /* Initialize the keyboard */
 void init_keyboard();
 
 /* Handles keyboard interrupt */
 void keyboard_handler();
 
+uint8_t get_curr_terminal();
+int get_kbd_buffer();
+void set_kbd_buffer(int kbd_buf);
 #endif /* _KEYBOARD_H */

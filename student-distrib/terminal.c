@@ -1,6 +1,12 @@
 #include "terminal.h"
+#define KB_4            0x1000
+extern void flush_tlb();
 volatile uint32_t enter_pressed = 0;
-
+int screen_x_save[3] = {0, 0, 0};
+int screen_y_save[3] = {0, 0, 0};
+int current_terminal = 1;
+char keyboard_buffer_save[BUFFER_LENGTH*3];
+int kbd_buffer_save[3] = {0, 0, 0};
 /* terminal_read (int32_t fd, void* buf, int32_t nbytes)
  *  Functionality: Reads characters from the keyboard buffer into a user buffer until ENTER is pressed or the buffer is full.
  *  Arguments:  fd - File descriptor (not used here).
@@ -38,6 +44,7 @@ int32_t terminal_write (int32_t fd, const void* buf, int32_t nbytes) {
         return -1;
     }
     int i = 0;
+    i = 0;
     char* tmp_buffer = (char*) buf;
     while (i < nbytes) {
         if (tmp_buffer[i] != 0x0) {
@@ -67,6 +74,27 @@ int32_t terminal_open (const uint8_t* filename){
  ***********************************************************************************
  */
 int32_t terminal_close (int32_t fd){
+    return 0;
+}
+
+int32_t terminal_switch(int terminal) {
+    int i;
+    for(i = 0; i < BUFFER_LENGTH; i++) {
+        keyboard_buffer_save[i+((current_terminal-1)*BUFFER_LENGTH)] = keyboard_buffer[i];
+        keyboard_buffer[i] = keyboard_buffer_save[i+((terminal-1)*BUFFER_LENGTH)];
+    }
+    kbd_buffer_save[current_terminal-1] = get_kbd_buffer();
+    set_kbd_buffer(kbd_buffer_save[terminal-1]);
+    screen_x_save[current_terminal-1] = screen_x;
+    screen_y_save[current_terminal-1] = screen_y;
+    screen_x = screen_x_save[terminal-1];
+    screen_y = screen_y_save[terminal-1];
+    memcpy((void*)(VIDEO+(current_terminal)*KB_4),video_mem,KB_4);
+    memcpy(video_mem,(void*)(VIDEO+(terminal)*KB_4),KB_4);
+    current_terminal = terminal;
+    
+    update_cursor(screen_x, screen_y);
+    flush_tlb();
     return 0;
 }
  

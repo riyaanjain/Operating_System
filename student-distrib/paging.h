@@ -17,6 +17,7 @@
 #define KERNEL_INDEX    1
 #define USER_MEMORY     0x8000000
 #define MB_4            0x400000
+#define KB_4            0x1000
 #define USERMEM_INDEX   USER_MEMORY/MB_4
 
 

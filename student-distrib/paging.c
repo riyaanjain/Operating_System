@@ -46,7 +46,7 @@ void setup_paging() {
             page_directory_single[i].page_size    = 1;  //page size must be a single 4MB page
         }
         /*Initializing table entry*/
-        if(i  == VIDEO_MEMORY >> 12){
+        if((i  == VIDEO_MEMORY >> 12) || (i  == (VIDEO_MEMORY + KB_4*1) >> 12) || (i  == (VIDEO_MEMORY + KB_4*2) >> 12) || (i  == (VIDEO_MEMORY + KB_4*3) >> 12)){
             page_directory_entry_single[i].present = 1; // must be 1
         }
         page_directory_entry_single[i].read_write           = 1; // writes allowed

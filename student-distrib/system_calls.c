@@ -25,6 +25,7 @@ int32_t halt(uint8_t status) {
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*(num_pcb)));
     for (i = 0; i < 8; i++) {
         pcb->fd_table[i].flags = 0;
+        close(i);
     }
 
     //Restoring parent data

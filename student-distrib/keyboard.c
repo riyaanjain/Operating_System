@@ -14,6 +14,10 @@ char ctrl = 0;
 char alt = 0;
 int kbd_buffer = 0;     /*Keyboard buffer index*/
 int overflow_block = 0;
+char f1 = 0;
+char f2 = 0;
+char f3 = 0;
+uint8_t curr_terminal = 1;
 
 static void clear_buffer();
 
@@ -162,6 +166,57 @@ void keyboard_handler() {
         return;
     }
 
+    if(c == F1_PRESS) {
+        f1 += 1;
+        if(alt == 1 && f1 == 1) {
+            curr_terminal = 1;
+            terminal_switch(1);
+        }
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+    if(c == F1_RELEASE) {
+        f1 -= 1;
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+
+    if(c == F2_PRESS) {
+        f2 += 1;
+        if(alt == 1 && f2 == 1) {
+            curr_terminal = 2;
+            terminal_switch(2);
+        }
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+    if(c == F2_RELEASE) {
+        f2 -= 1;
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+
+    if(c == F3_PRESS) {
+        f3 += 1;
+        if(alt == 1 && f3 == 1) {
+            curr_terminal = 3;
+            terminal_switch(3);
+        }
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+    if(c == F3_RELEASE) {
+        f3 -= 1;
+        send_eoi(keyboard_irq);
+        sti();
+        return;
+    }
+
     /*Special clear screen command*/
     if(ctrl == 1 && c == L_SCANCODE) {
         kbd_buffer = 0;
@@ -254,4 +309,16 @@ void clear_buffer() {
     for(i = 0; i < BUFFER_LENGTH; i++) {
         keyboard_buffer[i] = 0x0; /*Set all buffer elements to null*/
     }
+}
+
+uint8_t get_curr_terminal() {
+    return curr_terminal;
+}
+
+int get_kbd_buffer() {
+    return kbd_buffer;
+}
+
+void set_kbd_buffer(int kbd_buf) {
+    kbd_buffer = kbd_buf;
 }
