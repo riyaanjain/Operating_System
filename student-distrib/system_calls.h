@@ -51,6 +51,7 @@ typedef struct pcb_t {
     uint32_t ebp;
     uint8_t args[MAX_ARGS_LEN];
     fd_t fd_table[NUM_OPEN_FILES];
+    uint32_t curr_term;
 } pcb_t;
 
 void split(const uint8_t* command, uint8_t* fname, uint8_t* args);

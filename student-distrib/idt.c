@@ -16,7 +16,7 @@ void init_idt() {
 
     for (i = 0; i < NUM_VEC; i++) {
         // set present bit
-        if ((i < NUM_EXCEPTIONS && i != RESTRICTED_EXCEPTION) || i == SYSTEM_CALLS || i == KEYBOARD_CALLS || i == RTC_CALLS) {
+        if ((i < NUM_EXCEPTIONS && i != RESTRICTED_EXCEPTION) || i == SYSTEM_CALLS || i == KEYBOARD_CALLS || i == RTC_CALLS || i == PIT_CALLS) {
             idt[i].present = 1;
         } else {
             idt[i].present = 0;
@@ -36,7 +36,7 @@ void init_idt() {
         idt[i].size = 1;
         idt[i].reserved1 = 1;
         idt[i].reserved2 = 1;
-        if (i == KEYBOARD_CALLS || i == RTC_CALLS) {
+        if (i == KEYBOARD_CALLS || i == RTC_CALLS || i == PIT_CALLS) {
             idt[i].reserved3 = 1;
         } else {
             idt[i].reserved3 = 0;
@@ -72,6 +72,6 @@ void init_idt() {
     SET_IDT_ENTRY(idt[SYSTEM_CALLS], syscall_linkage); // System Calls
     SET_IDT_ENTRY(idt[KEYBOARD_CALLS], keyboard_call); // Keyboard Calls
     SET_IDT_ENTRY(idt[RTC_CALLS], rtc_call); // RTC Calls
-
+    SET_IDT_ENTRY(idt[PIT_CALLS], pit_call); // PIT Calls
     lidt(idt_desc_ptr); //load the idt
 }

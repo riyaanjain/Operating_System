@@ -16,9 +16,83 @@ extern void context_switch(uint32_t d, uint32_t c, uint32_t b, uint32_t a);
 int32_t halt(uint8_t status) {
     int i;
 
-    if (num_pcb == 1) {
-        num_pcb--;
-        execute((uint8_t*)"shell");
+    if (num_pcb == 1 || num_pcb == 2 || num_pcb == 3) {
+        const uint8_t* command = (uint8_t*)"shell";
+        directory_entry_t dentry;
+        uint8_t fname[MAX_FILENAME_LENGTH];
+        uint8_t args[MAX_ARGS_LEN];
+        split(command, fname, args); // Parse the arguments passed in
+        uint8_t copyhelp_buffer[4];
+        uint32_t i; //loop variable
+
+        //Checking file validity
+        if (read_dentry_by_name(fname, &dentry) == -1) {
+            return -1;
+        } else if(read_data(dentry.inode_number, 0, copyhelp_buffer, 4) == -1) { // Check if the filename from the argument is valid and also an executable file
+            return -1;
+        } else if(!(copyhelp_buffer[0] == MAGICNUM1 && copyhelp_buffer[1] == MAGICNUM2 && copyhelp_buffer[2] == MAGICNUM3 && copyhelp_buffer[3] == MAGICNUM4)) {
+            return -1;
+        } 
+        int curr_terminal = get_curr_terminal();
+        //Setting up paging
+        uint32_t pa = MB_8 + ((curr_terminal-1) * MB_4);
+        page_directory_single[USERMEM_INDEX].address_bits = pa >> 12;
+        flush_tlb();
+        
+        //Loading file into memory
+        if(read_data(dentry.inode_number, 0, (uint8_t*)(USER_MEMORY+USERMEM_OFFSET), ((inode_t*)inode_block + dentry.inode_number)->length) == -1) {
+            return -1;
+        } 
+
+        //Creating pcb
+        pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*curr_terminal));
+        pcb->pid = curr_terminal-1;
+        if(curr_terminal == 1 || curr_terminal == 2 || curr_terminal == 3) {
+            pcb->parent_pid = -1;
+        } else {
+            pcb->parent_pid = curr_terminal;
+        }
+        strncpy((int8_t*) pcb->args, (int8_t*) args, 100);
+        if (read_data(dentry.inode_number, 24, copyhelp_buffer, 4) == -1) {
+            return -1;
+        }
+
+        //Opening FDs
+        /*stdin*/
+        pcb->fd_table[0].file_operations.read = terminal_read;
+        pcb->fd_table[0].file_operations.write = terminal_write;
+        pcb->fd_table[0].file_operations.open = terminal_open;
+        pcb->fd_table[0].file_operations.close = terminal_close;
+        pcb->fd_table[0].flags = 1; 
+
+        /*stdout*/
+        pcb->fd_table[1].file_operations.read = terminal_read;
+        pcb->fd_table[1].file_operations.write = terminal_write;
+        pcb->fd_table[1].file_operations.open = terminal_open;
+        pcb->fd_table[1].file_operations.close = terminal_close;
+        pcb->fd_table[1].flags = 1; 
+
+        for(i = 2; i < 8; i++) {
+            pcb->fd_table[i].file_operations.read = empty_read;
+            pcb->fd_table[i].file_operations.write = empty_write;
+            pcb->fd_table[i].file_operations.open = empty_open;
+            pcb->fd_table[i].file_operations.close = empty_close;
+        }
+
+        //context switch
+        uint32_t esp;
+        uint32_t ebp;
+        __asm__("movl %%esp, %0" : "=r"(esp));
+        __asm__("movl %%ebp, %0" : "=r"(ebp));
+        pcb->esp = esp;
+        pcb->ebp = ebp;
+        uint32_t user_eip = *((uint32_t*)copyhelp_buffer);
+        uint32_t user_esp = USER_MEMORY + MB_4 - 4;
+        tss.ss0 = KERNEL_DS;
+        tss.esp0 = MB_8 - (KB_8*(curr_terminal-1))-4;
+        context_switch(user_esp, USER_CS, USER_DS, user_eip);
+        
+        return 0;
     }
 
     //Closing FDs
@@ -90,10 +164,10 @@ int32_t execute(const uint8_t* command) {
     //Creating pcb
     pcb_t* pcb = (pcb_t*)(MB_8 - (KB_8*num_pcb));
     pcb->pid = num_pcb-1;
-    if(num_pcb == 1) {
-        pcb->parent_pid = num_pcb-1;
+    if(num_pcb == 1 || num_pcb == 2 || num_pcb == 3) {
+        pcb->parent_pid = -1;
     } else {
-        pcb->parent_pid = num_pcb-2;
+        pcb->parent_pid = get_curr_terminal()-1;
     }
     strncpy((int8_t*) pcb->args, (int8_t*) args, 100);
     if (read_data(dentry.inode_number, 24, copyhelp_buffer, 4) == -1) {

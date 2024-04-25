@@ -13,7 +13,7 @@
 #include "rtc.h"
 #include "paging.h"
 #include "system_calls.h"
-
+#include "scheduling.h"
 
 #define RUN_TESTS
 
@@ -162,6 +162,9 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Init Paging */
     setup_paging();
 
+    /*init PIT*/
+    init_PIT();
+
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
 
@@ -177,8 +180,7 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */   
-    clear();
-    execute((uint8_t*)"shell");
+    // execute((uint8_t*)"shell");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

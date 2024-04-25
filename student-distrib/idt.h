@@ -7,6 +7,7 @@
 #ifndef ASM
 
 #define SYSTEM_CALLS            0x80
+#define PIT_CALLS               32
 #define KEYBOARD_CALLS          33
 #define RTC_CALLS               40
 #define NUM_EXCEPTIONS          20
@@ -36,6 +37,7 @@ extern void simd_floating_point_exception();
 extern void system_call();
 extern void keyboard_call();
 extern void rtc_call();
+extern void pit_call();
 
 #endif /* ASM */
 #endif /* _idt_H */

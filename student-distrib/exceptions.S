@@ -1,5 +1,6 @@
 #define ASM     1
 #define SYSTEM_CALLS    0x80
+#define PIT_CALLS    32
 #define KEYBOARD_CALLS    33
 #define RTC_CALLS    40
 
@@ -27,6 +28,12 @@
     call RTC_handler                                ;\
         iret
 
+#define PIT_INTERRUPT(function_name, vector) \
+    .globl function_name                            ;\
+    function_name:                                  ;\
+    call PIT_handler                                ;\
+        iret
+
 EXCEPTION(division_error, 0);
 EXCEPTION(debug, 1);
 EXCEPTION(non_maskable_interrupt, 2);
@@ -49,3 +56,4 @@ EXCEPTION(simd_floating_point_exception, 19);
 EXCEPTION(system_call, SYSTEM_CALLS);
 KEYBOARD_INTERRUPT(keyboard_call, KEYBOARD_CALLS);
 RTC_INTERRUPT(rtc_call, RTC_CALLS);
+PIT_INTERRUPT(pit_call, PIT_CALLS);
